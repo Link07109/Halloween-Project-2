@@ -1,0 +1,27 @@
+{
+	"identifier": "Secret_Room",
+	"uniqueIdentifer": "64867370-fec0-11ee-b31d-ef22fab488f4",
+	"x": 0,
+	"y": 1440,
+	"width": 320,
+	"height": 180,
+	"bgColor": "#404255",
+	"neighbourLevels": [
+		{
+			"levelIid": "f41ae810-fec0-11ee-b31d-a594b6e55fcd",
+			"dir": "ne"
+		},
+		{
+			"levelIid": "bc7cb860-fec0-11ee-b31d-f71522d60e25",
+			"dir": "n"
+		}
+	],
+	"customFields" : {},
+	"layers": [
+		"Default_floor.png",
+		"Custom_floor.png",
+		"Collisions.png",
+		"Wall_tops.png"
+	],
+	"entities" : {}
+}

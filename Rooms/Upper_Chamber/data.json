@@ -1,0 +1,39 @@
+{
+	"identifier": "Upper_Chamber",
+	"uniqueIdentifer": "ca28c800-fec0-11ee-b31d-3d7d0d232fca",
+	"x": 320,
+	"y": 900,
+	"width": 320,
+	"height": 180,
+	"bgColor": "#404255",
+	"neighbourLevels": [
+		{
+			"levelIid": "dd17e360-fec0-11ee-b31d-0529f24ed52c",
+			"dir": "n"
+		},
+		{
+			"levelIid": "0e890dc0-fec0-11ee-b31d-674937e16d8b",
+			"dir": "sw"
+		},
+		{
+			"levelIid": "2e2bcf00-fec0-11ee-b31d-0797008323cc",
+			"dir": "w"
+		},
+		{
+			"levelIid": "7fe856b0-fec0-11ee-b31d-d91231b8312a",
+			"dir": "se"
+		},
+		{
+			"levelIid": "67c52e40-fec0-11ee-b31d-8351876a3c7d",
+			"dir": "e"
+		}
+	],
+	"customFields" : {},
+	"layers": [
+		"Default_floor.png",
+		"Custom_floor.png",
+		"Collisions.png",
+		"Wall_tops.png"
+	],
+	"entities" : {}
+}

@@ -1,0 +1,39 @@
+{
+	"identifier": "Storage_Closet",
+	"uniqueIdentifer": "0e890dc0-fec0-11ee-b31d-674937e16d8b",
+	"x": 0,
+	"y": 1080,
+	"width": 320,
+	"height": 180,
+	"bgColor": "#404255",
+	"neighbourLevels": [
+		{
+			"levelIid": "f41ae810-fec0-11ee-b31d-a594b6e55fcd",
+			"dir": "se"
+		},
+		{
+			"levelIid": "bc7cb860-fec0-11ee-b31d-f71522d60e25",
+			"dir": "s"
+		},
+		{
+			"levelIid": "ca28c800-fec0-11ee-b31d-3d7d0d232fca",
+			"dir": "ne"
+		},
+		{
+			"levelIid": "2e2bcf00-fec0-11ee-b31d-0797008323cc",
+			"dir": "n"
+		},
+		{
+			"levelIid": "ac2409e0-fec0-11ee-b31d-6bebabaf48ba",
+			"dir": "nw"
+		}
+	],
+	"customFields" : {},
+	"layers": [
+		"Default_floor.png",
+		"Custom_floor.png",
+		"Collisions.png",
+		"Wall_tops.png"
+	],
+	"entities" : {}
+}

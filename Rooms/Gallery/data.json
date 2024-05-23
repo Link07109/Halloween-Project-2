@@ -1,0 +1,27 @@
+{
+	"identifier": "Gallery",
+	"uniqueIdentifer": "ac2409e0-fec0-11ee-b31d-6bebabaf48ba",
+	"x": -320,
+	"y": 900,
+	"width": 320,
+	"height": 180,
+	"bgColor": "#404255",
+	"neighbourLevels": [
+		{
+			"levelIid": "0e890dc0-fec0-11ee-b31d-674937e16d8b",
+			"dir": "se"
+		},
+		{
+			"levelIid": "2e2bcf00-fec0-11ee-b31d-0797008323cc",
+			"dir": "e"
+		}
+	],
+	"customFields" : {},
+	"layers": [
+		"Default_floor.png",
+		"Custom_floor.png",
+		"Collisions.png",
+		"Wall_tops.png"
+	],
+	"entities" : {}
+}
