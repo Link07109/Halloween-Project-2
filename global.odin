@@ -2,29 +2,24 @@ package game
 
 import rl "vendor:raylib"
 
-Room_Name :: enum {
-    Main_Hall,
-    Balcony,
-    Basement,
-    Bathroom,
-    Bedroom,
-    Gallery,
-    Left_Room,
-    Secret_Room,
-    Storage_Closet,
-    Library,
-    Upper_Chamber,
-    Upstairs_Hallway,
-
-    Title_Screen,
-    Game_Over_Screen,
+Tile :: struct {
+    src: rl.Vector2,
+    dst: rl.Vector2,
+    flip_x: bool,
+    flip_y: bool,
 }
 
 Room :: struct {
-    name: Room_Name,
+    name: string,
     music: rl.Music,
-    texture: rl.Texture2D,
     map_pos: rl.Vector2,
+
+    tile_offset: rl.Vector2,
+    collision_tiles: []u8,
+    tile_data: []Tile,
+
+    floor_tile_offset: rl.Vector2,
+    floor_tile_data: []Tile,
 }
 
 Door :: struct {

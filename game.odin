@@ -16,11 +16,6 @@ platform_collider :: proc(pos: rl.Vector2) -> rl.Rectangle {
     }
 }
 
-tile :: struct {
-    src: rl.Vector2,
-    dst: rl.Vector2,
-}
-
 main :: proc() {
     track: mem.Tracking_Allocator
     mem.tracking_allocator_init(&track, context.allocator)
@@ -42,9 +37,9 @@ main :: proc() {
     rl.SetWindowState({ .WINDOW_RESIZABLE })
     rl.SetWindowIcon(rl.LoadImage("Resources/token.png"))
     //rl.SetWindowPosition(200, 200)
+    rl.SetExitKey(.GRAVE)
     rl.SetTargetFPS(60)
     rl.HideCursor()
-    rl.SetExitKey(.GRAVE)
 
     rl.InitAudioDevice()
 
@@ -73,133 +68,163 @@ main :: proc() {
     sound_beware := rl.LoadSound("Resources/Audio/BewareILive.wav")
 
     room_title_screen := Room {
-        name = .Title_Screen,
+        name = "Title_Screen",
         music = rl.LoadMusicStream("Resources/Audio/twilight.wav" ),
     }
     room_game_over := Room {
-        name = .Game_Over_Screen,
+        name = "Game_Over_Screen",
         music = rl.LoadMusicStream("Resources/Audio/zenonia-2-OST-Intro.wav"),
     }
     room_main_hall := Room {
-        .Main_Hall,
-        music_dark_memories,
-        rl.LoadTexture("Rooms/Main_Hall/_composite.png"),
-        { 70, 120 },
+        name = "Main_Hall",
+        music = music_dark_memories,
     }
     room_left := Room {
-        name = .Left_Room,
+        name = "Left_Room",
         music = music_dark_memories,
-        texture = rl.LoadTexture("Rooms/Left_Room/_composite.png"),
     }
     room_secret := Room {
-        name = .Secret_Room,
+        name = "Secret_Room",
         music = music_dark_memories,
-        texture = rl.LoadTexture("Rooms/Secret_Room/_composite.png"),
     }
     room_storage_closet := Room {
-        name = .Storage_Closet,
+        name = "Storage_Closet",
         music = music_dark_memories,
-        texture = rl.LoadTexture("Rooms/Storage_Closet/_composite.png"),
     }
     room_basement := Room {
-        name = .Basement,
+        name = "Basement",
         music = rl.LoadMusicStream("Resources/Audio/deep inside.wav"),
-        texture = rl.LoadTexture("Rooms/Basement/_composite.png"),
     }
     room_bedroom := Room {
-        name = .Bedroom,
+        name = "Bedroom",
         music = music_dark_memories,
-        texture = rl.LoadTexture("Rooms/Bedroom/_composite.png"),
     }
     room_library := Room {
-        name = .Library,
+        name = "Library",
         music = music_dark_memories,
-        texture = rl.LoadTexture("Rooms/Library/_composite.png"),
     }
     room_upper_chamber := Room {
-        name = .Upper_Chamber,
+        name = "Upper_Chamber",
         music = music_lavender,
-        texture = rl.LoadTexture("Rooms/Upper_Chamber/_composite.png"),
     }
     room_bathroom := Room {
-        name = .Bathroom,
+        name = "Bathroom",
         music = music_lavender,
-        texture = rl.LoadTexture("Rooms/Bathroom/_composite.png"),
     }
     room_upstairs_hallway := Room {
-        name = .Upstairs_Hallway,
+        name = "Upstairs_Hallway",
         music = music_lavender,
-        texture = rl.LoadTexture("Rooms/Upstairs_hallway/_composite.png"),
     }
     room_gallery := Room {
-        name = .Gallery,
+        name = "Gallery",
         music = music_lavender,
-        texture = rl.LoadTexture("Rooms/Gallery/_composite.png"),
     }
     room_balcony := Room {
-        .Balcony,
-        rl.LoadMusicStream("Resources/Audio/Rain-Theme-Zenonia.wav"),
+        name = "Balcony",
+        music = rl.LoadMusicStream("Resources/Audio/Rain-Theme-Zenonia.wav"),
         //rl.LoadMusicStream("Resources/balcony.wav"),
-        rl.LoadTexture("Rooms/Balcony/_composite.png"),
-        { 70, 50 },
+    }
+    rooms_map := map[string]^Room {
+        "Main_Hall" = &room_main_hall,
+        "Balcony" = &room_balcony,
+        "Bathroom" = &room_bathroom,
+        "Bedroom" = &room_bedroom,
+        "Upper_Chamber" = &room_upper_chamber,
+        "Upstairs_Hallway" = &room_upstairs_hallway,
+        "Left_Room" = &room_left,
+        "Secret_Room" = &room_secret,
+        "Library" = &room_library,
+        "Basement" = &room_basement,
+        "Gallery" = &room_gallery,
+        "Storage_Closet" = &room_storage_closet,
     }
     current_room := &room_title_screen
     paused := true
 
-    current_music := current_room.music
-    rl.PlayMusicStream(current_music)
-
-    tile_offset: rl.Vector2;
     tile_size := 16
-    tile_columns := -1
-    tile_rows := -1
-    collision_tiles: []u8
-    tile_data: []tile
-    tileset := rl.LoadTexture("tileset.png")
+    tile_columns := 20
+    tile_rows := 12
+    candidate_room := current_room
 
-    if project, ok := ldtk.load_from_file("foo.ldtk", context.temp_allocator).?; ok {
+    tileset := rl.LoadTexture("worldtiles.png")
+
+    if project, ok := ldtk.load_from_file("workld.ldtk", context.temp_allocator).?; ok {
+        fmt.println("---- Successfully loaded level json!!!")
         for level in project.levels {
+            //level_iid := level.iid
+            level_name := level.identifier
+
+            if level_name not_in rooms_map {
+                continue
+            }
+            if level_name != candidate_room.name {
+                candidate_room = rooms_map[level_name]
+            }
+            fmt.printf("---- level name: %v", level_name)
+
             for layer in level.layer_instances {
                 switch layer.type {
-                    case .IntGrid:
-                        tile_columns = layer.c_width
-                        tile_rows = layer.c_height
-                        tile_size = 1080 / tile_rows
-                        collision_tiles = make([]u8, tile_columns * tile_rows)
-                        defer delete(collision_tiles)
-
-                        tile_offset.x = f32(layer.px_total_offset_x)
-                        tile_offset.y = f32(layer.px_total_offset_y)
+                    case .IntGrid: // collisions
+                        fmt.println("---- Currently processing collision map")
+                        candidate_room.collision_tiles = make([]u8, tile_columns * tile_rows)
+                        candidate_room.tile_offset.x = f32(layer.px_total_offset_x)
+                        candidate_room.tile_offset.y = f32(layer.px_total_offset_y)
 
                         for val, idx in layer.int_grid_csv {
-                            collision_tiles[idx] = u8(val)
+                            candidate_room.collision_tiles[idx] = u8(val)
                         }
 
-                        tile_data = make([]tile, len(layer.auto_layer_tiles))
-                        defer delete(tile_data)
+                        candidate_room.tile_data = make([]Tile, len(layer.auto_layer_tiles))
 
                         multiplier: f32 = f32(tile_size) / f32(layer.grid_size)
                         for val, idx in layer.auto_layer_tiles {
-                            tile_data[idx].dst.x = f32(val.px.x) * multiplier
-                            tile_data[idx].dst.y = f32(val.px.y) * multiplier
-                            tile_data[idx].src.x = f32(val.src.x)
+                            candidate_room.tile_data[idx].dst.x = f32(val.px.x) * multiplier
+                            candidate_room.tile_data[idx].dst.y = f32(val.px.y) * multiplier
+                            candidate_room.tile_data[idx].src.x = f32(val.src.x)
+                            candidate_room.tile_data[idx].src.y = f32(val.src.y)
                             f := val.f
-                            tile_data[idx].src.y = f32(val.src.y)
+                            candidate_room.tile_data[idx].flip_x = bool(f & 1)
+                            candidate_room.tile_data[idx].flip_y = bool(f & 2)
                         }
-                    case .Entities:
-                    case .Tiles:
-                    case .AutoLayer:
+                    case .Entities: // literally everything else
+                    case .Tiles: // custom floor
+                    case .AutoLayer: // default floor
+                        if layer.identifier != "Default_floor" {
+                            continue
+                        }
+                        fmt.println("---- Currently processing floor tiles")
+                        candidate_room.floor_tile_offset.x = f32(layer.px_total_offset_x)
+                        candidate_room.floor_tile_offset.y = f32(layer.px_total_offset_y)
+
+                        candidate_room.floor_tile_data = make([]Tile, len(layer.auto_layer_tiles))
+
+                        multiplier: f32 = f32(tile_size) / f32(layer.grid_size)
+                        for val, idx in layer.auto_layer_tiles {
+                            candidate_room.floor_tile_data[idx].dst.x = f32(val.px.x) * multiplier
+                            candidate_room.floor_tile_data[idx].dst.y = f32(val.px.y) * multiplier
+                            candidate_room.floor_tile_data[idx].src.x = f32(val.src.x)
+                            candidate_room.floor_tile_data[idx].src.y = f32(val.src.y)
+                            f := val.f
+                            candidate_room.floor_tile_data[idx].flip_x = bool(f & 1)
+                            candidate_room.floor_tile_data[idx].flip_y = bool(f & 2)
+                        }
+
                 }
             }
         }
+    } else {
+        fmt.println("---- ERROR LOADING LEVEL JSON!!!!")
     }
 
     platform_texture := rl.LoadTexture("platform.png")
     game_map_texture := rl.LoadTexture("Resources/game map.png")
-    poe_soul_texture := rl.LoadTexture("Resources/poe_soul.ico")
+    //poe_soul_texture := rl.LoadTextureFromImage(rl.LoadImage("Resources/poe_soul.ico"))
     key_texture := rl.LoadTexture("Resources/smallKey.png")
     candy_texture := rl.LoadTexture("Resources/candy.png")
     player_load_animation_textures()
+
+    current_music := current_room.music
+    rl.PlayMusicStream(current_music)
 
     should_show_map: bool
     should_show_inventory: bool
@@ -219,7 +244,7 @@ main :: proc() {
         camera := rl.Camera2D {
            zoom = screen_height/PixelWindowHeight,
            //offset = { screen_width, screen_height/2 },
-           target = player_pos,
+           //target = player_pos,
         }
         ui_camera := rl.Camera2D {
             zoom = screen_height/PixelWindowHeight,
@@ -248,7 +273,7 @@ main :: proc() {
             }
 
             switch current_room.name {
-                case .Main_Hall:
+                case "Main_Hall":
                     if rl.IsKeyPressed(.LEFT) {
                         current_room = &room_left
                     } else if rl.IsKeyPressed(.RIGHT) {
@@ -257,27 +282,27 @@ main :: proc() {
                         // (locked)
                         current_room = &room_upper_chamber
                     }
-                case .Balcony:
+                case "Balcony":
                     if rl.IsKeyPressed(.DOWN) {
                         current_room = &room_upper_chamber
                     }
-                case .Secret_Room:
+                case "Secret_Room":
                     if rl.IsKeyPressed(.UP) {
                         current_room = &room_left
                     }
-                case .Bathroom:
+                case "Bathroom":
                     if rl.IsKeyPressed(.LEFT) {
                         current_room = &room_upper_chamber
                     }
-                case .Bedroom:
+                case "Bedroom":
                     if rl.IsKeyPressed(.UP) {
                         current_room = &room_library
                     }
-                case .Gallery:
+                case "Gallery":
                     if rl.IsKeyPressed(.RIGHT) {
                         current_room = &room_upstairs_hallway
                     }
-                case .Left_Room:
+                case "Left_Room":
                     if rl.IsKeyPressed(.DOWN) {
                         current_room = &room_secret
                     } else if rl.IsKeyPressed(.RIGHT) {
@@ -285,15 +310,15 @@ main :: proc() {
                     } else if rl.IsKeyPressed(.UP) {
                         current_room = &room_storage_closet
                     }
-                case .Basement:
+                case "Basement":
                     if rl.IsKeyPressed(.DOWN) {
                         current_room = &room_library
                     }
-                case .Storage_Closet:
+                case "Storage_Closet":
                     if rl.IsKeyPressed(.DOWN) {
                         current_room = &room_left
                     }
-                case .Library:
+                case "Library":
                     if rl.IsKeyPressed(.DOWN) {
                         current_room = &room_bedroom
                     } else if rl.IsKeyPressed(.LEFT) {
@@ -301,7 +326,7 @@ main :: proc() {
                     } else if rl.IsKeyPressed(.UP) {
                         current_room = &room_basement
                     }
-                case .Upper_Chamber:
+                case "Upper_Chamber":
                     if rl.IsKeyPressed(.LEFT) {
                         current_room = &room_upstairs_hallway
                     } else if rl.IsKeyPressed(.RIGHT) {
@@ -311,19 +336,19 @@ main :: proc() {
                     } else if rl.IsKeyPressed(.DOWN) {
                         current_room = &room_main_hall
                     }
-                case .Upstairs_Hallway:
+                case "Upstairs_Hallway":
                     if rl.IsKeyPressed(.LEFT) {
                         current_room = &room_gallery
                     } else if rl.IsKeyPressed(.RIGHT) {
                         current_room = &room_upper_chamber
                     }
-                case .Title_Screen:
+                case "Title_Screen":
                     paused = true
                     if rl.IsKeyPressed(.ENTER) {
                         paused = false
                         current_room = &room_main_hall
                     }
-                case .Game_Over_Screen:
+                case "Game_Over_Screen":
                     paused = true
                     if rl.IsKeyPressed(.ENTER) {
                         current_room = &room_title_screen
@@ -351,47 +376,67 @@ main :: proc() {
 
         // drawables
         rl.BeginMode2D(camera)
-        rl.ClearBackground(rl.BLUE)
-        if current_room.texture.width > 0 {
+        rl.ClearBackground(rl.WHITE)
+        //if current_room.texture.width > 0 {
             //rl.DrawTextureV(current_room.texture, { 0, 0 }, rl.WHITE)
-        }
+        //}
 
         offset: rl.Vector2
-        offset.x = f32(screen_width - f32(tile_size * tile_columns)) / 2
+        //offset.x = f32(f32(screen_width) - f32(tile_size * tile_columns)) / 2
 
-        for row := 0; row < tile_rows; row += 1 {
-            for column := 0; column < tile_columns; column += 1 {
-                collider := collision_tiles[row * tile_columns + column]
+        if current_room.name != "Title_Screen" && current_room.name != "Game_Over_Screen" {
+            for val in current_room.tile_data {
+                src_rect := rl.Rectangle { val.src.x, val.src.y, 16, 16 }
+                if val.flip_x {
+                    src_rect.width *= -1.0
+                }
+                if val.flip_y {
+                    src_rect.height *= -1.0
+                }
+                dst_rect := rl.Rectangle {val.dst.x + offset.x + current_room.tile_offset.x, val.dst.y + offset.y + current_room.tile_offset.y, f32(tile_size), f32(tile_size)}
+                rl.DrawTexturePro(tileset, src_rect, dst_rect, { f32(tile_size/2), f32(tile_size/2) }, 0, rl.WHITE)
+            }
+            for val in current_room.floor_tile_data {
+                src_rect := rl.Rectangle { val.src.x, val.src.y, 16, 16 }
+                if val.flip_x {
+                    src_rect.width *= -1.0
+                }
+                if val.flip_y {
+                    src_rect.height *= -1.0
+                }
+                dst_rect := rl.Rectangle {val.dst.x + offset.x + current_room.floor_tile_offset.x, val.dst.y + offset.y + current_room.floor_tile_offset.y, f32(tile_size), f32(tile_size)}
+                rl.DrawTexturePro(tileset, src_rect, dst_rect, { f32(tile_size/2), f32(tile_size/2) }, 0, rl.WHITE)
+            }
 
-                if collider != 0 {
-                    coll := rl.Rectangle { f32(column * tile_size) + offset.x + tile_offset.x - f32(tile_size) / 2, f32(row * tile_size) + offset.y + tile_offset.y - f32(tile_size) / 2.0, f32(tile_size), f32(tile_size) }
-                    rl.DrawRectangleRec(coll, rl.RED)
-                    //player_collisions(coll)
+            for row := 0; row < tile_rows; row += 1 {
+                for column := 0; column < tile_columns; column += 1 {
+                    collider := current_room.collision_tiles[row * tile_columns + column]
+
+                    if collider != 0 {
+                        coll := rl.Rectangle {f32(column * tile_size) + offset.x + current_room.tile_offset.x - f32(tile_size) / 2.0, f32(row * tile_size) + offset.y + current_room.tile_offset.y - f32(tile_size) / 2.0, f32(tile_size), f32(tile_size)}
+                        //rl.DrawRectangleRec(coll, { 255, 10, 10, 25 })
+                        player_collision(coll)
+                    }
                 }
             }
-        }
 
-        for val, idx in tile_data {
-            src_rect := rl.Rectangle { val.src.x, val.src.y, 8, 8 }
-            dst_rect := rl.Rectangle { val.dst.x + offset.x + tile_offset.x, val.dst.y + offset.y + tile_offset.y, f32(tile_size), f32(tile_size) }
-            rl.DrawTexturePro(tileset, src_rect, dst_rect, { f32(tile_size/2), f32(tile_size/2) }, 0, rl.WHITE)
+            if !paused {
+                update_animation(&player_current_anim)
+            }
+            player_draw()
+            player_draw_debug()
         }
-
-        if !paused {
-            update_animation(&player_current_anim)
-        }
-        player_draw()
         rl.EndMode2D()
 
         // gui
         new_cam := ui_camera
         rl.BeginMode2D(ui_camera)
-        if current_room.name == .Title_Screen {
+        if current_room.name == "Title_Screen" {
             rl.ClearBackground(rl.DARKPURPLE)
             rl.DrawText("Halloween Project", 50, 50, 25, rl.WHITE)
             rl.DrawText("Press [ENTER] to start", 100, 100, 10, rl.WHITE)
             rl.DrawText("Ivan Valadez", 120, 165, 4, rl.WHITE)
-        } else if current_room.name == .Game_Over_Screen {
+        } else if current_room.name == "Game_Over_Screen" {
             rl.ClearBackground(rl.BLACK)
             rl.DrawText("Game Over", 50, 50, 25, rl.RED)
             rl.DrawText("Press [ENTER] to retry", 100, 100, 10, rl.WHITE)
@@ -414,7 +459,7 @@ main :: proc() {
             }
             if should_show_map {
                 rl.DrawTextureEx(game_map_texture, { 80, 3 }, 0, 0.35, rl.WHITE)
-                rl.DrawTextureV(poe_soul_texture, current_room.map_pos, rl.WHITE)
+                //rl.DrawTextureV(poe_soul_texture, current_room.map_pos, rl.WHITE)
                 rl.DrawText("current room name", 100, 15, 4, rl.WHITE)
             }
         }
@@ -438,5 +483,11 @@ main :: proc() {
 
     rl.CloseWindow()
 
+    delete(rooms_map)
+    for _, entry in rooms_map {
+        delete(entry.tile_data)
+        delete(entry.floor_tile_data)
+        delete(entry.collision_tiles)
+    }
     free_all(context.temp_allocator)
 }

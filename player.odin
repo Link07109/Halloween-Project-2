@@ -1,13 +1,13 @@
 package game
 
 import rl "vendor:raylib"
+import "core:fmt"
 
 player_sanity := i32(300)
 player_sanity_frame_timer: f32
 player_pos := rl.Vector2 { 160, 120 }
 player_vel: rl.Vector2
 player_run_speed := f32(120)
-player_grounded: bool
 player_flip: bool
 player_current_anim: Animation
 
@@ -86,20 +86,15 @@ player_movement :: proc() {
         }
     }
 
-    player_grounded = false
     player_pos += player_vel * rl.GetFrameTime()
 
     player_feet_collider.x = player_pos.x - 4
     player_feet_collider.y = player_pos.y - 4
 }
 
-player_platform_collision :: proc(platforms: [dynamic]rl.Vector2) {
-    for platform in platforms {
-        if rl.CheckCollisionRecs(player_feet_collider, platform_collider(platform)) && player_vel.y > 0 {
-            player_vel.y = 0
-            player_pos.y = platform.y
-            player_grounded = true
-        }
+player_collision :: proc(coll: rl.Rectangle) {
+    if rl.CheckCollisionRecs(player_feet_collider, coll) {
+        fmt.println("---- Collided with wall!")
     }
 }
 
