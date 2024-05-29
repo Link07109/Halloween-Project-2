@@ -45,9 +45,9 @@ tile_size := 16
 tile_columns := 20
 tile_rows := 12
 
-load_auto_layer_ldtk :: proc(layer: ldtk.Layer_Instance, offset: ^rl.Vector2, tiles: ^[]Tile) {
-    offset.x = f32(layer.px_total_offset_x)
-    offset.y = f32(layer.px_total_offset_y)
+load_auto_layer_ldtk :: proc(layer: ldtk.Layer_Instance, tile_offset: ^rl.Vector2, tiles: ^[]Tile) {
+    tile_offset.x = f32(layer.px_total_offset_x)
+    tile_offset.y = f32(layer.px_total_offset_y)
 
     tiles^ = make([]Tile, len(layer.auto_layer_tiles))
 
@@ -60,5 +60,21 @@ load_auto_layer_ldtk :: proc(layer: ldtk.Layer_Instance, offset: ^rl.Vector2, ti
         f := val.f
         tiles[idx].flip_x = bool(f & 1)
         tiles[idx].flip_y = bool(f & 2)
+    }
+}
+
+draw_tiles_ldtk :: proc(tileset: rl.Texture2D, tile_offset: rl.Vector2, tiles: []Tile) {
+    offset: rl.Vector2 = { 8, 8 }
+
+    for val in tiles {
+        src_rect := rl.Rectangle { val.src.x, val.src.y, 16, 16 }
+        if val.flip_x {
+            src_rect.width *= -1.0
+        }
+        if val.flip_y {
+            src_rect.height *= -1.0
+        }
+        dst_rect := rl.Rectangle {val.dst.x + offset.x + tile_offset.x, val.dst.y + offset.y + tile_offset.y, f32(tile_size), f32(tile_size)}
+        rl.DrawTexturePro(tileset, src_rect, dst_rect, { f32(tile_size/2), f32(tile_size/2) }, 0, rl.WHITE)
     }
 }
