@@ -141,15 +141,13 @@ main :: proc() {
     current_room := &room_title_screen
     paused := true
 
-    tile_size := 16
-    tile_columns := 20
-    tile_rows := 12
     candidate_room := current_room
 
     tileset := rl.LoadTexture("worldtiles.png")
 
-    if project, ok := ldtk.load_from_file("workld.ldtk", context.temp_allocator).?; ok {
-        fmt.println("---- Successfully loaded level json!!!")
+    if project, ok := ldtk.load_from_file("world.ldtk", context.temp_allocator).?; ok {
+        fmt.println("---- Successfully loaded ldtk json!!!")
+
         for level in project.levels {
             //level_iid := level.iid
             level_name := level.identifier
@@ -160,60 +158,59 @@ main :: proc() {
             if level_name != candidate_room.name {
                 candidate_room = rooms_map[level_name]
             }
-            fmt.printf("---- level name: %v", level_name)
+            fmt.printf("---- Level Name: %v\n", level_name)
 
             for layer in level.layer_instances {
                 switch layer.type {
                     case .IntGrid: // collisions
-                        fmt.println("---- Currently processing collision map")
-                        candidate_room.collision_tiles = make([]u8, tile_columns * tile_rows)
-                        candidate_room.tile_offset.x = f32(layer.px_total_offset_x)
-                        candidate_room.tile_offset.y = f32(layer.px_total_offset_y)
+                        fmt.println("------ Processing collision map")
 
+                        candidate_room.collision_tiles = make([]u8, tile_columns * tile_rows)
                         for val, idx in layer.int_grid_csv {
                             candidate_room.collision_tiles[idx] = u8(val)
                         }
 
-                        candidate_room.tile_data = make([]Tile, len(layer.auto_layer_tiles))
+                        load_auto_layer_ldtk(layer, &candidate_room.tile_offset, &candidate_room.tile_data)
 
-                        multiplier: f32 = f32(tile_size) / f32(layer.grid_size)
-                        for val, idx in layer.auto_layer_tiles {
-                            candidate_room.tile_data[idx].dst.x = f32(val.px.x) * multiplier
-                            candidate_room.tile_data[idx].dst.y = f32(val.px.y) * multiplier
-                            candidate_room.tile_data[idx].src.x = f32(val.src.x)
-                            candidate_room.tile_data[idx].src.y = f32(val.src.y)
-                            f := val.f
-                            candidate_room.tile_data[idx].flip_x = bool(f & 1)
-                            candidate_room.tile_data[idx].flip_y = bool(f & 2)
-                        }
                     case .Entities: // literally everything else
-                    case .Tiles: // custom floor
-                    case .AutoLayer: // default floor
-                        if layer.identifier != "Default_floor" {
-                            continue
+                        fmt.println("------ Processing Entities")
+
+                        for entity in layer.entity_instances {
+                            if entity.identifier == "Door" {
+                                if entity.field_instances[0].value != nil {
+                                    // door is locked
+                                } else {
+                                    // door is unlocked
+                                }
+                                fmt.printf("-------- Door!\n")
+                            } else if entity.identifier == "Item" {
+                                for thing in entity.field_instances {
+                                    if thing.identifier == "type" {
+                                        // init item
+                                        fmt.printf("-------- Item Name: %v\n", thing.value)
+                                        // thing.tile <-- use this to get the texture (draw it later)
+                                    }
+                                }
+                            }
+
                         }
-                        fmt.println("---- Currently processing floor tiles")
-                        candidate_room.floor_tile_offset.x = f32(layer.px_total_offset_x)
-                        candidate_room.floor_tile_offset.y = f32(layer.px_total_offset_y)
+                    case .Tiles: // custom floor
+                        // TODO
+                    case .AutoLayer: // default floor + wall tops
+                        if layer.identifier == "Default_floor" {
+                            fmt.println("------ Processing default floor tiles")
+                            load_auto_layer_ldtk(layer, &candidate_room.floor_tile_offset, &candidate_room.floor_tile_data)
 
-                        candidate_room.floor_tile_data = make([]Tile, len(layer.auto_layer_tiles))
-
-                        multiplier: f32 = f32(tile_size) / f32(layer.grid_size)
-                        for val, idx in layer.auto_layer_tiles {
-                            candidate_room.floor_tile_data[idx].dst.x = f32(val.px.x) * multiplier
-                            candidate_room.floor_tile_data[idx].dst.y = f32(val.px.y) * multiplier
-                            candidate_room.floor_tile_data[idx].src.x = f32(val.src.x)
-                            candidate_room.floor_tile_data[idx].src.y = f32(val.src.y)
-                            f := val.f
-                            candidate_room.floor_tile_data[idx].flip_x = bool(f & 1)
-                            candidate_room.floor_tile_data[idx].flip_y = bool(f & 2)
+                        } else if layer.identifier == "Wall_tops" {
+                            fmt.println("------ Processing wall top tiles")
+                            load_auto_layer_ldtk(layer, &candidate_room.wall_top_tile_offset, &candidate_room.wall_top_tile_data)
                         }
 
                 }
             }
         }
     } else {
-        fmt.println("---- ERROR LOADING LEVEL JSON!!!!")
+        fmt.println("---- ERROR LOADING LDTK JSON!!!!")
     }
 
     platform_texture := rl.LoadTexture("platform.png")
@@ -407,6 +404,17 @@ main :: proc() {
                 dst_rect := rl.Rectangle {val.dst.x + offset.x + current_room.floor_tile_offset.x, val.dst.y + offset.y + current_room.floor_tile_offset.y, f32(tile_size), f32(tile_size)}
                 rl.DrawTexturePro(tileset, src_rect, dst_rect, { f32(tile_size/2), f32(tile_size/2) }, 0, rl.WHITE)
             }
+            for val in current_room.wall_top_tile_data {
+                src_rect := rl.Rectangle { val.src.x, val.src.y, 16, 16 }
+                if val.flip_x {
+                    src_rect.width *= -1.0
+                }
+                if val.flip_y {
+                    src_rect.height *= -1.0
+                }
+                dst_rect := rl.Rectangle {val.dst.x + offset.x + current_room.wall_top_tile_offset.x, val.dst.y + offset.y + current_room.wall_top_tile_offset.y, f32(tile_size), f32(tile_size)}
+                rl.DrawTexturePro(tileset, src_rect, dst_rect, { f32(tile_size/2), f32(tile_size/2) }, 0, rl.WHITE)
+            }
 
             for row := 0; row < tile_rows; row += 1 {
                 for column := 0; column < tile_columns; column += 1 {
@@ -483,11 +491,13 @@ main :: proc() {
 
     rl.CloseWindow()
 
-    delete(rooms_map)
     for _, entry in rooms_map {
         delete(entry.tile_data)
         delete(entry.floor_tile_data)
+        delete(entry.wall_top_tile_data)
+        delete(entry.entity_tile_data)
         delete(entry.collision_tiles)
     }
+    delete(rooms_map)
     free_all(context.temp_allocator)
 }
