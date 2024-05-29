@@ -22,6 +22,9 @@ Room :: struct {
     floor_tile_offset: rl.Vector2,
     floor_tile_data: []Tile,
 
+    custom_floor_tile_offset: rl.Vector2,
+    custom_floor_tile_data: []Tile,
+
     wall_top_tile_offset: rl.Vector2,
     wall_top_tile_data: []Tile,
 

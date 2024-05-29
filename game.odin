@@ -5,6 +5,7 @@ import "core:mem"
 import "core:fmt"
 import "core:encoding/json"
 import "core:os"
+import "core:strings"
 import "ldtk"
 
 PixelWindowHeight :: 180
@@ -204,7 +205,17 @@ main :: proc() {
 
                         }
                     case .Tiles: // custom floor
-                        // TODO
+                        candidate_room.custom_floor_tile_data = make([]Tile, len(layer.grid_tiles))
+
+                        for val, idx in layer.grid_tiles {
+                            candidate_room.custom_floor_tile_data[idx].dst.x = f32(val.px.x)
+                            candidate_room.custom_floor_tile_data[idx].dst.y = f32(val.px.y)
+                            candidate_room.custom_floor_tile_data[idx].src.x = f32(val.src.x)
+                            candidate_room.custom_floor_tile_data[idx].src.y = f32(val.src.y)
+                            f := val.f
+                            candidate_room.custom_floor_tile_data[idx].flip_x = bool(f & 1)
+                            candidate_room.custom_floor_tile_data[idx].flip_y = bool(f & 2)
+                        }
                     case .AutoLayer: // default floor + wall tops
                         if layer.identifier == "Default_floor" {
                             fmt.println("------ Processing Default Floor Tiles")
@@ -394,6 +405,7 @@ main :: proc() {
             current_room.entity_tile_offset = -8
             draw_tiles_ldtk(tileset, current_room.tile_offset, current_room.tile_data)
             draw_tiles_ldtk(tileset, current_room.floor_tile_offset, current_room.floor_tile_data)
+            draw_tiles_ldtk(tileset, current_room.custom_floor_tile_offset, current_room.custom_floor_tile_data)
             draw_tiles_ldtk(tileset, current_room.wall_top_tile_offset, current_room.wall_top_tile_data)
             draw_tiles_ldtk(tileset, current_room.entity_tile_offset, current_room.entity_tile_data)
 
@@ -449,7 +461,7 @@ main :: proc() {
             if should_show_map {
                 rl.DrawTextureEx(game_map_texture, { 80, 3 }, 0, 0.35, rl.WHITE)
                 //rl.DrawTextureV(poe_soul_texture, current_room.map_pos, rl.WHITE)
-                rl.DrawText("current room name", 100, 15, 4, rl.WHITE)
+                rl.DrawText(strings.clone_to_cstring(current_room.name, context.temp_allocator), 100, 15, 4, rl.WHITE)
             }
         }
         rl.EndMode2D()
@@ -475,6 +487,7 @@ main :: proc() {
     for _, entry in rooms_map {
         delete(entry.tile_data)
         delete(entry.floor_tile_data)
+        delete(entry.custom_floor_tile_data)
         delete(entry.wall_top_tile_data)
         delete(entry.entity_tile_data)
         delete(entry.collision_tiles)
