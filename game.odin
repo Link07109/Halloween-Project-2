@@ -10,13 +10,6 @@ import "ldtk"
 
 PixelWindowHeight :: 180
 
-platform_collider :: proc(pos: rl.Vector2) -> rl.Rectangle {
-    return  {
-        pos.x, pos.y,
-        96, 19
-    }
-}
-
 main :: proc() {
     track: mem.Tracking_Allocator
     mem.tracking_allocator_init(&track, context.allocator)
@@ -165,65 +158,48 @@ main :: proc() {
                 switch layer.type {
                     case .IntGrid: // collisions
                         fmt.println("------ Processing Collisions")
+                        load_tile_layer_ldtk(layer, layer.auto_layer_tiles, &candidate_room.tile_offset, &candidate_room.tile_data)
 
                         candidate_room.collision_tiles = make([]u8, tile_columns * tile_rows)
                         for val, idx in layer.int_grid_csv {
                             candidate_room.collision_tiles[idx] = u8(val)
                         }
-
-                        load_auto_layer_ldtk(layer, &candidate_room.tile_offset, &candidate_room.tile_data)
-
                     case .Entities: // literally everything else
                         fmt.println("------ Processing Entities")
+                        load_entity_layer_ldtk(layer, layer.entity_instances, &candidate_room.entity_tile_data)
 
-                        candidate_room.entity_tile_data = make([]Tile, len(layer.entity_instances))
+                        for entity in layer.entity_instances {
 
-                        for entity, idx in layer.entity_instances {
-                            entity_tile := entity.tile.? or_else { x = 0, y = 0 }
-
-                            candidate_room.entity_tile_data[idx].src.x = f32(entity_tile.x)
-                            candidate_room.entity_tile_data[idx].src.y = f32(entity_tile.y)
-                            candidate_room.entity_tile_data[idx].dst.x = f32(entity.px.x)
-                            candidate_room.entity_tile_data[idx].dst.y = f32(entity.px.y)
-
-                            if entity.identifier == "Door" {
-                                if entity.field_instances[0].value != nil {
-                                    // door is locked
-                                } else {
-                                    // door is unlocked
-                                }
-                                fmt.printf("-------- Door!\n")
-                            } else if entity.identifier == "Item" {
-                                for thing in entity.field_instances {
+                            switch entity.identifier {
+                                case "Door":
+                                    thing := entity.field_instances[0]
+                                    fmt.printf("--------door locked with: %v\n", thing.value)
+//                                    if thing.value == "Key" {
+//                                        fmt.printf("-------- Door! (locked)\n")
+//                                    } else {
+//                                        fmt.printf("-------- Door! (unlocked)\n")
+//                                    }
+                                case "Item":
+                                    thing := entity.field_instances[0]
                                     if thing.identifier == "type" {
                                         // init item
                                         fmt.printf("-------- Item Name: %v\n", thing.value)
-                                        // thing.tile <-- use this to get the texture (draw it later)
                                     }
-                                }
                             }
 
                         }
                     case .Tiles: // custom floor
-                        candidate_room.custom_floor_tile_data = make([]Tile, len(layer.grid_tiles))
+                        fmt.println("---- Processing Custom Floor Tiles")
+                        load_tile_layer_ldtk(layer, layer.grid_tiles, &candidate_room.custom_floor_tile_offset, &candidate_room.custom_floor_tile_data)
 
-                        for val, idx in layer.grid_tiles {
-                            candidate_room.custom_floor_tile_data[idx].dst.x = f32(val.px.x)
-                            candidate_room.custom_floor_tile_data[idx].dst.y = f32(val.px.y)
-                            candidate_room.custom_floor_tile_data[idx].src.x = f32(val.src.x)
-                            candidate_room.custom_floor_tile_data[idx].src.y = f32(val.src.y)
-                            f := val.f
-                            candidate_room.custom_floor_tile_data[idx].flip_x = bool(f & 1)
-                            candidate_room.custom_floor_tile_data[idx].flip_y = bool(f & 2)
-                        }
                     case .AutoLayer: // default floor + wall tops
                         if layer.identifier == "Default_floor" {
                             fmt.println("------ Processing Default Floor Tiles")
-                            load_auto_layer_ldtk(layer, &candidate_room.floor_tile_offset, &candidate_room.floor_tile_data)
+                            load_tile_layer_ldtk(layer, layer.auto_layer_tiles, &candidate_room.floor_tile_offset, &candidate_room.floor_tile_data)
 
                         } else if layer.identifier == "Wall_tops" {
                             fmt.println("------ Processing Wall Top Tiles")
-                            load_auto_layer_ldtk(layer, &candidate_room.wall_top_tile_offset, &candidate_room.wall_top_tile_data)
+                            load_tile_layer_ldtk(layer, layer.auto_layer_tiles, &candidate_room.wall_top_tile_offset, &candidate_room.wall_top_tile_data)
                         }
 
                 }
@@ -394,12 +370,6 @@ main :: proc() {
         // drawables
         rl.BeginMode2D(camera)
         rl.ClearBackground(rl.WHITE)
-        //if current_room.texture.width > 0 {
-            //rl.DrawTextureV(current_room.texture, { 0, 0 }, rl.WHITE)
-        //}
-
-        offset: rl.Vector2 = { 8, 8 }
-        //offset.x = f32(f32(screen_width) - f32(tile_size * tile_columns)) / 2
 
         if current_room.name != "Title_Screen" && current_room.name != "Game_Over_Screen" {
             current_room.entity_tile_offset = -8
@@ -408,18 +378,7 @@ main :: proc() {
             draw_tiles_ldtk(tileset, current_room.custom_floor_tile_offset, current_room.custom_floor_tile_data)
             draw_tiles_ldtk(tileset, current_room.wall_top_tile_offset, current_room.wall_top_tile_data)
             draw_tiles_ldtk(tileset, current_room.entity_tile_offset, current_room.entity_tile_data)
-
-            for row := 0; row < tile_rows; row += 1 {
-                for column := 0; column < tile_columns; column += 1 {
-                    collider := current_room.collision_tiles[row * tile_columns + column]
-
-                    if collider != 0 {
-                        coll := rl.Rectangle {f32(column * tile_size) + offset.x + current_room.tile_offset.x - f32(tile_size) / 2.0, f32(row * tile_size) + offset.y + current_room.tile_offset.y - f32(tile_size) / 2.0, f32(tile_size), f32(tile_size)}
-                        //rl.DrawRectangleRec(coll, { 255, 10, 10, 25 })
-                        player_collision(coll)
-                    }
-                }
-            }
+            handle_collisions(current_room)
 
             if !paused {
                 update_animation(&player_current_anim)
