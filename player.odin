@@ -7,7 +7,7 @@ player_sanity := i32(300)
 player_sanity_frame_timer: f32
 player_pos := rl.Vector2 { 160, 120 }
 player_vel: rl.Vector2
-player_run_speed := f32(120)
+player_run_speed := f32(80)
 player_flip: bool
 player_current_anim: Animation
 
