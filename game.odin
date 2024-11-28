@@ -8,9 +8,249 @@ import "core:os"
 import "core:strings"
 import "ldtk"
 
-PixelWindowHeight :: 180
+screen_width := f32(1344) //672
+screen_height := f32(864) //432
+title := cstring("Halloween Project (v2.0)")
+
+game_screen_width := i32(224)
+game_screen_height := i32(144)
+
+default_font,
+big_font,
+font_linkawake,
+font_alagard,
+font_determination: rl.Font
+
+default_font_size,
+big_font_size: f32
+
+load_fonts :: proc() {
+    font_linkawake = rl.LoadFont("Resources/Fonts/linkawake_font.png")
+    font_alagard = rl.LoadFont("Resources/Fonts/alagard.png")
+    font_determination = rl.LoadFont("Resources/Fonts/DTM-Sans.otf")
+
+    default_font = font_linkawake
+    default_font_size = 8
+    big_font = font_determination
+    big_font_size = 32
+}
+
+//music_zant,
+//music_snowpeak,
+//music_mini_boss,
+//music_guardian,
+music_dark_memories,
+music_to_the_moon,
+music_lavender: rl.Music
+
+//sound_typing,
+//sound_twilit_intro,
+//sound_oot_game_over,
+sound_witch_laugh,
+sound_tp_game_over,
+sound_teleport,
+sound_spirit_gem_get,
+sound_run_roar,
+sound_link_scream1,
+sound_link_scream2,
+sound_gold_token,
+sound_flowey,
+sound_dimensional,
+sound_correct,
+sound_beware: rl.Sound
+
+load_audio :: proc() {
+    music_dark_memories = rl.LoadMusicStream("Resources/Audio/darkMemories.wav")
+    // music_zant = rl.LoadMusicStream("Resources/Audio/zant.wav")
+    // music_to_the_moon = rl.LoadMusicStream("Resources/Audio/to the moon.wav")
+    // music_snowpeak = rl.LoadMusicStream("Resources/Audio/snowpeak.wav")
+    // music_mini_boss = rl.LoadMusicStream("Resources/Audio/miniBoss.wav")
+    music_lavender = rl.LoadMusicStream("Resources/Audio/lavender.wav")
+    // music_guardian = rl.LoadMusicStream("Resources/Audio/guardian.wav")
+
+    sound_witch_laugh = rl.LoadSound("Resources/Audio/witchlaugh.wav")
+    // sound_typing = rl.LoadSound("Resources/Audio/typing.wav")
+    // sound_twilit_intro = rl.LoadSound("Resources/Audio/twilit intro.wav")
+    sound_tp_game_over = rl.LoadSound("Resources/Audio/tpGameOver.wav")
+    sound_teleport = rl.LoadSound("Resources/Audio/teleport.wav")
+    sound_spirit_gem_get = rl.LoadSound("Resources/Audio/Spirit-Gem-Get.wav")
+    sound_run_roar = rl.LoadSound("Resources/Audio/runRAWR.wav")
+    // sound_oot_game_over = rl.LoadSound("Resources/Audio/ootGameOver.wav")
+    sound_link_scream1 = rl.LoadSound("Resources/Audio/linkscream1.wav")
+    sound_link_scream2 = rl.LoadSound("Resources/Audio/linkscream2.wav")
+    sound_gold_token = rl.LoadSound("Resources/Audio/goldToken.wav")
+    sound_flowey = rl.LoadSound("Resources/Audio/flowey.wav")
+    sound_dimensional = rl.LoadSound("Resources/Audio/dimensional.wav")
+    sound_correct = rl.LoadSound("Resources/Audio/correctsound.wav")
+    sound_beware = rl.LoadSound("Resources/Audio/BewareILive.wav")
+}
+
+room_title_screen,
+room_game_over,
+room_main_hall,
+room_left,
+room_secret,
+room_storage_closet,
+room_basement,
+room_bedroom,
+room_library,
+room_upper_chamber,
+room_bathroom,
+room_upstairs_hallway,
+room_gallery,
+room_balcony: Room
+
+current_room: ^Room
+
+load_rooms :: proc() {
+    room_title_screen = Room {
+        name = "Title_Screen",
+        music = rl.LoadMusicStream("Resources/Audio/twilight.wav"),
+    }
+    room_game_over = Room {
+        name = "Game_Over_Screen",
+        music = rl.LoadMusicStream("Resources/Audio/zenonia-2-OST-Intro.wav"),
+    }
+
+    room_main_hall = Room {
+        name = "Main_Hall",
+        music = music_dark_memories,
+        map_pos = { 116, 84 }
+    }
+    room_left = Room {
+        name = "Left_Room",
+        music = music_dark_memories,
+        map_pos = { 82, 84 }
+    }
+    room_secret = Room {
+        name = "Secret_Room",
+        music = music_dark_memories,
+        map_pos = { 81, 103 }
+    }
+    room_storage_closet = Room {
+        name = "Storage_Closet",
+        music = music_dark_memories,
+        map_pos = { 84, 67 }
+    }
+    room_basement = Room {
+        name = "Basement",
+        music = rl.LoadMusicStream("Resources/Audio/deep inside.wav"),
+        map_pos = { 154, 70 }
+    }
+    room_bedroom = Room {
+        name = "Bedroom",
+        music = music_dark_memories,
+        map_pos = { 154, 104 }
+    }
+    room_library = Room {
+        name = "Library",
+        music = music_dark_memories,
+        map_pos = { 154, 84 }
+    }
+    room_upper_chamber = Room {
+        name = "Upper_Chamber",
+        music = music_lavender,
+        map_pos = { 122, 48 }
+    }
+    room_bathroom = Room {
+        name = "Bathroom",
+        music = music_lavender,
+        map_pos = { 154, 48 }
+    }
+    room_upstairs_hallway = Room {
+        name = "Upstairs_Hallway",
+        music = music_lavender,
+        map_pos = { 90, 48 }
+    }
+    room_gallery = Room {
+        name = "Gallery",
+        music = music_lavender,
+        map_pos = { 60, 48 }
+    }
+    room_balcony = Room {
+        name = "Balcony",
+        music = rl.LoadMusicStream("Resources/Audio/Rain-Theme-Zenonia.wav"),
+        //rl.LoadMusicStream("Resources/balcony.wav"),
+        map_pos = { 122, 30 }
+    }
+}
+
+load_world :: proc(candidate_room: ^Room, rooms_map: map[string]^Room) {
+    if project, ok := ldtk.load_from_file("Resources/new world links awakening.ldtk", context.temp_allocator).?; ok {
+        fmt.println("---- Successfully loaded ldtk json!!!")
+
+        candidate_room := candidate_room
+        for level in project.levels {
+            level_name := level.identifier
+
+            if level_name not_in rooms_map {
+                continue
+            }
+            if level_name != candidate_room.name {
+                candidate_room = rooms_map[level_name]
+            }
+            //fmt.printf("---- Level Name: %v\n", level_name)
+            tile_size = project.default_grid_size
+
+            for layer in level.layer_instances {
+                switch layer.type {
+                    case .IntGrid: // floor + walls, collisions
+                        candidate_room.tile_data = load_tile_layer_ldtk(layer.auto_layer_tiles)
+
+                        for val, idx in layer.int_grid_csv {
+                            candidate_room.collision_tiles[idx] = u8(val)
+                        }
+                    case .Entities: // items, interactables
+                        candidate_room.entity_tile_data = load_entity_layer_ldtk(candidate_room, rooms_map, layer, layer.entity_instances, &candidate_room.entity_tile_offset)
+
+                    case .Tiles: // custom tiles
+                        candidate_room.custom_tile_data = load_tile_layer_ldtk(layer.grid_tiles)
+                    case .AutoLayer:
+                }
+            }
+        }
+        free_all(context.allocator)
+    } else {
+        fmt.println("---- ERROR LOADING LDTK JSON!!!!")
+    }
+}
+
+update_room_music :: proc(current_room: ^Room, current_music: ^rl.Music) {
+    if !rl.IsMusicStreamPlaying(current_room.music) {
+        rl.StopMusicStream(current_music^)
+        current_music^ = current_room.music
+        rl.PlayMusicStream(current_music^)
+    } else {
+        rl.UpdateMusicStream(current_music^)
+    }
+}
+
+game_over :: proc() {
+    rl.PlaySound(sound_link_scream2)
+    current_room = &room_game_over
+}
+
+game_win :: proc() {
+    // yippi !
+    rl.PlaySound(sound_spirit_gem_get)
+}
+
+dialogue_message: cstring
+
+paused := true
+should_show_map,
+should_show_inventory,
+should_show_inputbox,
+should_show_dialogue,
+
+exit_window,
+should_close_window: bool
 
 main :: proc() {
+    // ---
+    // MEMORY TRACKING
+    // ---
+
     track: mem.Tracking_Allocator
     mem.tracking_allocator_init(&track, context.allocator)
     context.allocator = mem.tracking_allocator(&track)
@@ -27,97 +267,33 @@ main :: proc() {
         mem.tracking_allocator_destroy(&track)
     }
 
-    rl.InitWindow(1920, 1080, "Halloween Project (v2.0)")
-    rl.SetWindowState({ .WINDOW_RESIZABLE })
-    rl.SetWindowIcon(rl.LoadImage("Resources/token.png"))
-    //rl.SetWindowPosition(200, 200)
+
+    // ---
+    // INIT PHASE
+    // ---
+
+    rl.InitWindow(i32(screen_width), i32(screen_height), title)
+    rl.SetWindowMinSize(224, 144)
+    rl.SetWindowState({ .WINDOW_MAXIMIZED })
+    rl.SetWindowIcon(rl.LoadImage("Resources/tokenPixel.png"))
     rl.SetExitKey(.GRAVE)
     rl.SetTargetFPS(60)
     rl.HideCursor()
 
+    target := rl.LoadRenderTexture(game_screen_width, game_screen_height)
+    rl.SetTextureFilter(target.texture, .POINT)
+
+    tileset := rl.LoadTexture("Resources/worldtiles.png")
+    outside_texture := rl.LoadTexture("Resources/outside.png")
+    game_map_texture := rl.LoadTexture("Resources/map_fullscreen.png")
+    player_load_animation_textures()
+
+    load_fonts()
+
     rl.InitAudioDevice()
-
-    music_dark_memories := rl.LoadMusicStream("Resources/Audio/darkMemories.wav")
-//    music_zant := rl.LoadMusicStream("Resources/Audio/zant.wav")
-//    music_to_the_moon := rl.LoadMusicStream("Resources/Audio/to the moon.wav")
-//    music_snowpeak := rl.LoadMusicStream("Resources/Audio/snowpeak.wav")
-//    music_mini_boss := rl.LoadMusicStream("Resources/Audio/miniBoss.wav")
-    music_lavender := rl.LoadMusicStream("Resources/Audio/lavender.wav")
-//    music_guardian := rl.LoadMusicStream("Resources/Audio/guardian.wav")
-//
-    sound_witch_laugh := rl.LoadSound("Resources/Audio/witchlaugh.wav")
-//    sound_typing := rl.LoadSound("Resources/Audio/typing.wav")
-//    sound_twilit_intro := rl.LoadSound("Resources/Audio/twilit intro.wav")
-    sound_tp_game_over := rl.LoadSound("Resources/Audio/tpGameOver.wav")
-    sound_teleport := rl.LoadSound("Resources/Audio/teleport.wav")
-    sound_spirit_gem_get := rl.LoadSound("Resources/Audio/Spirit-Gem-Get-The-Legend-of-Zelda-Phantom-Hourglass-Music.wav")
-    sound_run_roar := rl.LoadSound("Resources/Audio/runRAWR.wav")
-//    sound_oot_game_over := rl.LoadSound("Resources/Audio/ootGameOver.wav")
-    sound_link_scream1 := rl.LoadSound("Resources/Audio/linkscream1.wav")
-    sound_link_scream2 := rl.LoadSound("Resources/Audio/linkscream2.wav")
-    sound_gold_token := rl.LoadSound("Resources/Audio/goldToken.wav")
-    sound_flowey := rl.LoadSound("Resources/Audio/flowey.wav")
-    sound_dimensional := rl.LoadSound("Resources/Audio/dimensional.wav")
-    sound_correct := rl.LoadSound("Resources/Audio/correctsound.wav")
-    sound_beware := rl.LoadSound("Resources/Audio/BewareILive.wav")
-
-    room_title_screen := Room {
-        name = "Title_Screen",
-        music = rl.LoadMusicStream("Resources/Audio/twilight.wav" ),
-    }
-    room_game_over := Room {
-        name = "Game_Over_Screen",
-        music = rl.LoadMusicStream("Resources/Audio/zenonia-2-OST-Intro.wav"),
-    }
-    room_main_hall := Room {
-        name = "Main_Hall",
-        music = music_dark_memories,
-    }
-    room_left := Room {
-        name = "Left_Room",
-        music = music_dark_memories,
-    }
-    room_secret := Room {
-        name = "Secret_Room",
-        music = music_dark_memories,
-    }
-    room_storage_closet := Room {
-        name = "Storage_Closet",
-        music = music_dark_memories,
-    }
-    room_basement := Room {
-        name = "Basement",
-        music = rl.LoadMusicStream("Resources/Audio/deep inside.wav"),
-    }
-    room_bedroom := Room {
-        name = "Bedroom",
-        music = music_dark_memories,
-    }
-    room_library := Room {
-        name = "Library",
-        music = music_dark_memories,
-    }
-    room_upper_chamber := Room {
-        name = "Upper_Chamber",
-        music = music_lavender,
-    }
-    room_bathroom := Room {
-        name = "Bathroom",
-        music = music_lavender,
-    }
-    room_upstairs_hallway := Room {
-        name = "Upstairs_Hallway",
-        music = music_lavender,
-    }
-    room_gallery := Room {
-        name = "Gallery",
-        music = music_lavender,
-    }
-    room_balcony := Room {
-        name = "Balcony",
-        music = rl.LoadMusicStream("Resources/Audio/Rain-Theme-Zenonia.wav"),
-        //rl.LoadMusicStream("Resources/balcony.wav"),
-    }
+    rl.SetMasterVolume(0.25)
+    load_audio()
+    load_rooms()
     rooms_map := map[string]^Room {
         "Main_Hall" = &room_main_hall,
         "Balcony" = &room_balcony,
@@ -132,115 +308,25 @@ main :: proc() {
         "Gallery" = &room_gallery,
         "Storage_Closet" = &room_storage_closet,
     }
-    current_room := &room_title_screen
-    paused := true
+    candidate_room := &room_left
+    load_world(candidate_room, rooms_map)
 
-    candidate_room := current_room
-
-    tileset := rl.LoadTexture("worldtiles.png")
-
-    if project, ok := ldtk.load_from_file("world.ldtk", context.temp_allocator).?; ok {
-        fmt.println("---- Successfully loaded ldtk json!!!")
-
-        for level in project.levels {
-            //level_iid := level.iid
-            level_name := level.identifier
-
-            if level_name not_in rooms_map {
-                continue
-            }
-            if level_name != candidate_room.name {
-                candidate_room = rooms_map[level_name]
-            }
-            fmt.printf("---- Level Name: %v\n", level_name)
-
-            for layer in level.layer_instances {
-                switch layer.type {
-                    case .IntGrid: // collisions
-                        fmt.println("------ Processing Collisions")
-                        load_tile_layer_ldtk(layer, layer.auto_layer_tiles, &candidate_room.tile_offset, &candidate_room.tile_data)
-
-                        candidate_room.collision_tiles = make([]u8, tile_columns * tile_rows)
-                        for val, idx in layer.int_grid_csv {
-                            candidate_room.collision_tiles[idx] = u8(val)
-                        }
-                    case .Entities: // literally everything else
-                        fmt.println("------ Processing Entities")
-                        load_entity_layer_ldtk(layer, layer.entity_instances, &candidate_room.entity_tile_data)
-
-                        for entity in layer.entity_instances {
-
-                            switch entity.identifier {
-                                case "Door":
-                                    thing := entity.field_instances[0]
-                                    fmt.printf("--------door locked with: %v\n", thing.value)
-//                                    if thing.value == "Key" {
-//                                        fmt.printf("-------- Door! (locked)\n")
-//                                    } else {
-//                                        fmt.printf("-------- Door! (unlocked)\n")
-//                                    }
-                                case "Item":
-                                    thing := entity.field_instances[0]
-                                    if thing.identifier == "type" {
-                                        // init item
-                                        fmt.printf("-------- Item Name: %v\n", thing.value)
-                                    }
-                            }
-
-                        }
-                    case .Tiles: // custom floor
-                        fmt.println("---- Processing Custom Floor Tiles")
-                        load_tile_layer_ldtk(layer, layer.grid_tiles, &candidate_room.custom_floor_tile_offset, &candidate_room.custom_floor_tile_data)
-
-                    case .AutoLayer: // default floor + wall tops
-                        if layer.identifier == "Default_floor" {
-                            fmt.println("------ Processing Default Floor Tiles")
-                            load_tile_layer_ldtk(layer, layer.auto_layer_tiles, &candidate_room.floor_tile_offset, &candidate_room.floor_tile_data)
-
-                        } else if layer.identifier == "Wall_tops" {
-                            fmt.println("------ Processing Wall Top Tiles")
-                            load_tile_layer_ldtk(layer, layer.auto_layer_tiles, &candidate_room.wall_top_tile_offset, &candidate_room.wall_top_tile_data)
-                        }
-
-                }
-            }
-        }
-    } else {
-        fmt.println("---- ERROR LOADING LDTK JSON!!!!")
-    }
-
-    platform_texture := rl.LoadTexture("platform.png")
-    game_map_texture := rl.LoadTexture("Resources/game map.png")
-    //poe_soul_texture := rl.LoadTextureFromImage(rl.LoadImage("Resources/poe_soul.ico"))
-    key_texture := rl.LoadTexture("Resources/smallKey.png")
-    candy_texture := rl.LoadTexture("Resources/candy.png")
-    player_load_animation_textures()
-
+    current_room = &room_title_screen
     current_music := current_room.music
     rl.PlayMusicStream(current_music)
 
-    should_show_map: bool
-    should_show_inventory: bool
 
-    should_close_window: bool
-    exit_window: bool
+    // ---
+    // MAIN GAME LOOP
+    // ---
 
-    // game loop
     for !exit_window {
-        screen_height := f32(rl.GetScreenHeight())
-        screen_width := f32(rl.GetScreenWidth())
+        screen_width = f32(rl.GetScreenWidth())
+        screen_height = f32(rl.GetScreenHeight())
+        scale := min(screen_width/f32(game_screen_width), screen_height/f32(game_screen_height))
 
         if rl.IsKeyPressed(.F11) {
             rl.ToggleFullscreen()
-        }
-
-        camera := rl.Camera2D {
-           zoom = screen_height/PixelWindowHeight,
-           //offset = { screen_width, screen_height/2 },
-           //target = player_pos,
-        }
-        ui_camera := rl.Camera2D {
-            zoom = screen_height/PixelWindowHeight,
         }
 
         if rl.WindowShouldClose() {
@@ -256,85 +342,9 @@ main :: proc() {
                 should_close_window = false
             }
         } else {
-
-            if !rl.IsMusicStreamPlaying(current_room.music) {
-                rl.StopMusicStream(current_music)
-                current_music = current_room.music
-                rl.PlayMusicStream(current_music)
-            } else {
-                rl.UpdateMusicStream(current_music)
-            }
+            update_room_music(current_room, &current_music)
 
             switch current_room.name {
-                case "Main_Hall":
-                    if rl.IsKeyPressed(.LEFT) {
-                        current_room = &room_left
-                    } else if rl.IsKeyPressed(.RIGHT) {
-                        current_room = &room_library
-                    } else if rl.IsKeyPressed(.UP) {
-                        // (locked)
-                        current_room = &room_upper_chamber
-                    }
-                case "Balcony":
-                    if rl.IsKeyPressed(.DOWN) {
-                        current_room = &room_upper_chamber
-                    }
-                case "Secret_Room":
-                    if rl.IsKeyPressed(.UP) {
-                        current_room = &room_left
-                    }
-                case "Bathroom":
-                    if rl.IsKeyPressed(.LEFT) {
-                        current_room = &room_upper_chamber
-                    }
-                case "Bedroom":
-                    if rl.IsKeyPressed(.UP) {
-                        current_room = &room_library
-                    }
-                case "Gallery":
-                    if rl.IsKeyPressed(.RIGHT) {
-                        current_room = &room_upstairs_hallway
-                    }
-                case "Left_Room":
-                    if rl.IsKeyPressed(.DOWN) {
-                        current_room = &room_secret
-                    } else if rl.IsKeyPressed(.RIGHT) {
-                        current_room = &room_main_hall
-                    } else if rl.IsKeyPressed(.UP) {
-                        current_room = &room_storage_closet
-                    }
-                case "Basement":
-                    if rl.IsKeyPressed(.DOWN) {
-                        current_room = &room_library
-                    }
-                case "Storage_Closet":
-                    if rl.IsKeyPressed(.DOWN) {
-                        current_room = &room_left
-                    }
-                case "Library":
-                    if rl.IsKeyPressed(.DOWN) {
-                        current_room = &room_bedroom
-                    } else if rl.IsKeyPressed(.LEFT) {
-                        current_room = &room_main_hall
-                    } else if rl.IsKeyPressed(.UP) {
-                        current_room = &room_basement
-                    }
-                case "Upper_Chamber":
-                    if rl.IsKeyPressed(.LEFT) {
-                        current_room = &room_upstairs_hallway
-                    } else if rl.IsKeyPressed(.RIGHT) {
-                        current_room = &room_bathroom
-                    } else if rl.IsKeyPressed(.UP) {
-                        current_room = &room_balcony
-                    } else if rl.IsKeyPressed(.DOWN) {
-                        current_room = &room_main_hall
-                    }
-                case "Upstairs_Hallway":
-                    if rl.IsKeyPressed(.LEFT) {
-                        current_room = &room_gallery
-                    } else if rl.IsKeyPressed(.RIGHT) {
-                        current_room = &room_upper_chamber
-                    }
                 case "Title_Screen":
                     paused = true
                     if rl.IsKeyPressed(.ENTER) {
@@ -344,98 +354,238 @@ main :: proc() {
                 case "Game_Over_Screen":
                     paused = true
                     if rl.IsKeyPressed(.ENTER) {
+                        reset_data()
+                        current_room = &room_title_screen
+                    }
+                case "Win_Screen":
+                    paused = true
+                    if rl.IsKeyPressed(.ENTER) {
+                        reset_data()
                         current_room = &room_title_screen
                     }
             }
 
+            // actually playing the game!
             if !paused {
-                if rl.IsKeyPressed(.I) {
+                if rl.IsKeyPressed(Inventory_Toggle) {
                     should_show_inventory = !should_show_inventory
                 }
-                if rl.IsKeyPressed(.M) {
+                if rl.IsKeyPressed(Map_Toggle) && has_map {
                     should_show_map = !should_show_map
+                }
+                if rl.IsKeyPressed(Interact) {
+                    should_show_dialogue = false
                 }
 
                 player_movement()
                 player_update_sanity()
-                // player_wall_collision()
+
+                for &door in current_room.doors {
+                    if player_collided_with(door.coll) && !door.collided_with {
+                        should_show_dialogue = false
+                        if door.locked_with == "Key" {
+                            door.collided_with = true
+                            if  key_count <= 0 {
+                                dialogue_set_message("* This door is locked, silly!\nGo get a key!") // show this in dialogue box
+                                break
+                            } else {
+                                key_count -= 1
+                                door.locked_with = ""
+                            }
+                        } else if door.locked_with == "Code" {
+                            should_show_inputbox = true
+                            inputbox_show("How many letters are there?", 1)
+                            if rl.IsKeyPressed(.ENTER) {
+                                inputbox_process(&door, "3")
+                                should_show_inputbox = false
+                            }
+                            break
+                        } else if door.locked_with == "Puzzle" {
+                            should_show_inputbox = true
+                            inputbox_show("Enter in a number", 4)
+                            if rl.IsKeyPressed(.ENTER) {
+                                inputbox_process(&door, "5190")
+                                should_show_inputbox = false
+                            }
+                            break
+                        }
+                        current_room = door.dest_room
+                        player_pos = door.dest_player_pos
+                        break
+                    } else if !player_collided_with(door.coll) && door.collided_with {
+                        door.collided_with = false
+                    } else if !player_collided_with(door.coll) {
+                        should_show_inputbox = false
+                    }
+                }
+
+                for entity, idx in current_room.entity_tile_data {
+                    // door logic already done
+                    if entity.identifier == "Door" {
+                        continue
+                    }
+
+                    entity_coll := rl.Rectangle { entity.dst.x, entity.dst.y, f32(entity.width), f32(entity.height) }
+                    if player_collided_with(entity_coll) {
+                        //fmt.printf("entity: %v\n", entity)
+                        switch entity.identifier {
+                            case "Sign":
+                                //dialogue_set_message("* Reading sign...")
+                                continue
+                            case "Pot":
+                                dialogue_set_message("* Just a normal pot,\nnothing to see here")
+                                continue
+                            case "Statue":
+                                if !rl.IsSoundPlaying(sound_dimensional) {
+                                    rl.PlaySound(sound_dimensional)
+                                }
+                                // yeet player into the sky
+                                // cool floaty player animation
+                                // cant move for like 2 seconds
+                                // this used to kill u, idk if it still does
+                                continue
+                            case "Mirror":
+                                dialogue_set_message("* You look into the mirror but\ndon't see your reflection...")
+                                rl.PlaySound(sound_witch_laugh)
+                                reason_death = "You shouldn't have done that"
+                                game_over()
+                                continue
+                            case "Letter":
+                                letter_count += 1
+                            case "Key":
+                                key_count += 1
+                                dialogue_set_message("* You got a key!")
+                            case "Candy":
+                                candy_count += 1
+                                dialogue_set_message("* You got a piece of candy!")
+                                if candy_count >= 2 {
+                                    game_win()
+                                }
+                            case "Map":
+                                has_map = true
+                                dialogue_set_message("* You got the map!\n* Press M to use it!")
+                        }
+                        // pick up item! (removes it from the array of tiles so it wont be checked again or drawn)
+                        if !strings.has_prefix(entity.identifier, "\x00") {
+                            fmt.printf("Picked up: %v\n", entity.identifier)
+                            unordered_remove(&current_room.entity_tile_data, idx)
+                            rl.PlaySound(sound_gold_token)
+                        }
+                    }
+                }
             }
         }
 
 
         // -------------------------------------------------------------------------------------------------
+        // DRAWING PHASE
+        // -------------------------------------------------------------------------------------------------
 
-        rl.BeginDrawing()
+        // put everything in render texture so we can scale it easily
+        rl.BeginTextureMode(target)
 
-        // drawables
-        rl.BeginMode2D(camera)
-        rl.ClearBackground(rl.WHITE)
-
+        // game
         if current_room.name != "Title_Screen" && current_room.name != "Game_Over_Screen" {
-            current_room.entity_tile_offset = -8
-            draw_tiles_ldtk(tileset, current_room.tile_offset, current_room.tile_data)
-            draw_tiles_ldtk(tileset, current_room.floor_tile_offset, current_room.floor_tile_data)
-            draw_tiles_ldtk(tileset, current_room.custom_floor_tile_offset, current_room.custom_floor_tile_data)
-            draw_tiles_ldtk(tileset, current_room.wall_top_tile_offset, current_room.wall_top_tile_data)
-            draw_tiles_ldtk(tileset, current_room.entity_tile_offset, current_room.entity_tile_data)
-            handle_collisions(current_room)
+            //rl.ClearBackground({ 248, 248, 136, 255 })
+            rl.ClearBackground({ 11, 10, 22, 255 })
 
-            if !paused {
+            if !should_show_map {
+                draw_tiles_ldtk(tileset, current_room.tile_data)
+                if current_room == &room_balcony {
+                    rl.DrawTexture(outside_texture, 0, 0, rl.WHITE)
+                }
+                draw_entity_tiles_ldtk(tileset, current_room.entity_tile_offset, current_room.entity_tile_data)
+                draw_tiles_ldtk(tileset, current_room.custom_tile_data)
+                handle_collisions(current_room)
+            }
+
+            if !paused && !player_stop_animating {
                 update_animation(&player_current_anim)
             }
             player_draw()
-            player_draw_debug()
+            //player_draw_debug()
         }
-        rl.EndMode2D()
 
         // gui
-        new_cam := ui_camera
-        rl.BeginMode2D(ui_camera)
         if current_room.name == "Title_Screen" {
-            rl.ClearBackground(rl.DARKPURPLE)
-            rl.DrawText("Halloween Project", 50, 50, 25, rl.WHITE)
-            rl.DrawText("Press [ENTER] to start", 100, 100, 10, rl.WHITE)
-            rl.DrawText("Ivan Valadez", 120, 165, 4, rl.WHITE)
+            rl.ClearBackground(rl.Color { 128, 0, 128, 255})
+            rl.DrawTextEx(font_linkawake, "Halloween Project", { 20, 32 }, 16, 1, rl.Color { 127, 255, 212, 255 })
+            rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, 0, rl.WHITE)
+            rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, 0)[0]), 80 }, 16, 0, rl.RED)
+            rl.DrawTextEx(big_font, "to start", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, 0)[0]), 80 }, 16, 0, rl.WHITE)
+            rl.DrawTextEx(font_alagard, "Ivan Valadez", { 80, 128 }, 16, 0, rl.WHITE)
         } else if current_room.name == "Game_Over_Screen" {
             rl.ClearBackground(rl.BLACK)
-            rl.DrawText("Game Over", 50, 50, 25, rl.RED)
-            rl.DrawText("Press [ENTER] to retry", 100, 100, 10, rl.WHITE)
+            rl.DrawTextEx(big_font, "YOU DIED", { 65, 32 }, big_font_size, 0, rl.WHITE)
+            rl.DrawTextEx(default_font, reason_death, { 60, 60 }, default_font_size, 1, rl.WHITE)
+            rl.DrawText("Press", 50, 80, 10, rl.WHITE)
+            rl.DrawText("[ENTER]", 50 + rl.MeasureText("Press ", 10), 80, 10, rl.RED)
+            rl.DrawText("to retry", 50 + rl.MeasureText("Press [ENTER] ", 10), 80, 10, rl.WHITE)
         } else {
-            ui_y := i32(165)
+            ui_y := i32(128)
             // key
-            rl.DrawTextureEx(key_texture, { 5, f32(ui_y) }, 1, 0.11, rl.WHITE)
-            rl.DrawText("0", 20, ui_y + 2, 12, rl.WHITE)
+            key_src := rl.Rectangle { 160, 80, 16, 16 }
+            rl.DrawTexturePro(tileset, key_src, { 4, f32(ui_y) - 1, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+            rl.DrawText(fmt.ctprintf("%v", key_count), 20, ui_y + 4, 3, rl.WHITE)
             // candy
-            rl.DrawTextureEx(candy_texture, { 50-5, f32(ui_y) }, 1, 0.015, rl.WHITE)
-            rl.DrawText("0", 65-5, ui_y + 2, 12, rl.WHITE)
+            candy_src := rl.Rectangle { 160, 64, 16, 16 }
+            rl.DrawTexturePro(tileset, candy_src, { 50-7, f32(ui_y), 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+            rl.DrawText(fmt.ctprintf("%v", candy_count), 60, ui_y + 4, 3, rl.WHITE)
 
             player_draw_sanity()
 
+            if should_show_inputbox {
+                inputbox_draw()
+            }
+            if should_show_dialogue {
+                dialogue_draw(dialogue_message)
+            }
+
             if should_show_inventory {
                 // draw collected letters
-                // play map when collected
-                // draw player
-                rl.DrawText("inventory", 100, 15, 4, rl.WHITE)
+                letter_src := rl.Rectangle { 144, 64, 16, 16 }
+                rl.DrawTexturePro(tileset, letter_src, { 50-7, 64, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                rl.DrawText(fmt.ctprintf("%v", letter_count), 60, 64+4, 3, rl.WHITE)
+
+                // draw map item when collected
+                map_src := rl.Rectangle { 128, 64, 16, 16 }
+                rl.DrawTexturePro(tileset, map_src, { 50-7, 64+16, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+
+                rl.DrawText("Inventory", 80, 16, 4, rl.WHITE)
             }
             if should_show_map {
-                rl.DrawTextureEx(game_map_texture, { 80, 3 }, 0, 0.35, rl.WHITE)
-                //rl.DrawTextureV(poe_soul_texture, current_room.map_pos, rl.WHITE)
-                rl.DrawText(strings.clone_to_cstring(current_room.name, context.temp_allocator), 100, 15, 4, rl.WHITE)
+                poe_soul_src := rl.Rectangle { 112, 96, 16, 16 }
+                rl.DrawTexture(game_map_texture, 0, 0, rl.WHITE)
+                rl.DrawTexturePro(tileset, poe_soul_src, { current_room.map_pos.x, current_room.map_pos.y, 16, 16 }, 0, 0, rl.WHITE)
+                rl.DrawText(fmt.ctprintf("%v", current_room.name), 80, 16, 4, rl.WHITE)
             }
         }
-        rl.EndMode2D()
 
         if should_close_window {
-            rl.BeginMode2D(new_cam)
             rl.DrawRectangle(0, 55, i32(screen_width), 50, rl.BLACK)
-            rl.DrawText("Are you sure you want to quit? [Y/N]", 50, 75, 11, rl.WHITE)
-            rl.EndMode2D()
+            rl.DrawText("Are you sure you want to quit? [Y/N]", 10, 75, 3, rl.WHITE)
         }
+
+        rl.EndTextureMode()
+
+
+        // draw render texture
+        rl.BeginDrawing()
+        
+        rl.DrawTexturePro(target.texture, { 0, 0, f32(target.texture.width), -1 * f32(target.texture.height) },
+        { screen_width - f32(game_screen_width)*scale, screen_height - f32(game_screen_height)*scale,
+        //{0, 0,
+        f32(game_screen_width)*scale, f32(game_screen_height)*scale }, { 0, 0 }, 0, rl.WHITE)
 
         rl.EndDrawing()
 
         free_all(context.temp_allocator)
     }
+
+
+    // ---
+    // GAME CLOSE (CLEANUP)
+    // ---
 
     rl.StopMusicStream(current_music)
     rl.UnloadMusicStream(current_music)
@@ -443,14 +593,13 @@ main :: proc() {
 
     rl.CloseWindow()
 
-    for _, entry in rooms_map {
-        delete(entry.tile_data)
-        delete(entry.floor_tile_data)
-        delete(entry.custom_floor_tile_data)
-        delete(entry.wall_top_tile_data)
-        delete(entry.entity_tile_data)
-        delete(entry.collision_tiles)
+    for _, room in rooms_map {
+        //delete(room.custom_tile_data)
+        delete(room.entity_tile_data)
     }
     delete(rooms_map)
+    if has_made_nopers {
+        delete(nopers)
+    }
     free_all(context.temp_allocator)
 }

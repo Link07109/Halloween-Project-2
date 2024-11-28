@@ -3,8 +3,9 @@ package game
 import rl "vendor:raylib"
 
 Animation_Name :: enum {
-    Idle,
-    Run,
+    RunUp,
+    RunDown,
+    RunRight
 }
 
 Animation :: struct {
