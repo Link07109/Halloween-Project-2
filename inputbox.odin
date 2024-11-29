@@ -54,7 +54,11 @@ inputbox_process :: proc(door: ^Door, correct_answer: cstring) {
     delete(nopers)
     if input == correct_answer {
         rl.PlaySound(sound_correct)
-        //dialogue_set_message("* Correct")
+        if correct_answer == "3" {
+            dialogue_set_message("* Correct")
+        } else {
+            dialogue_set_message("* You may enter")
+        }
         door := door
         door.locked_with = ""
     } else {

@@ -385,6 +385,11 @@ main :: proc() {
                 player_movement()
                 player_update_sanity()
 
+                //if current_room.name == "Basement" {
+                    // TODO: make this only happen upon entering the room
+                    //dialogue_set_message("* This candy might be helpful.\n* Take it for entering the\ncorrect number")
+                //}
+
                 for &door in current_room.doors {
                     if player_collided_with(door.coll) && !door.collided_with {
                         should_show_dialogue = false
@@ -432,8 +437,10 @@ main :: proc() {
 
                     entity_coll := rl.Rectangle { entity.dst.x, entity.dst.y, f32(entity.width), f32(entity.height) }
                     if player_collided_with(entity_coll) {
-                        //fmt.printf("entity: %v\n", entity)
                         switch entity.identifier {
+                            case "Spike":
+                                game_over()
+                                continue
                             case "Sign":
                                 if !rl.IsSoundPlaying(sound_beware) {
                                     rl.PlaySound(sound_beware)
@@ -465,9 +472,6 @@ main :: proc() {
                             case "Candy":
                                 candy_count += 1
                                 dialogue_set_message("* You got a piece of candy!")
-                                if candy_count >= 2 {
-                                    game_win()
-                                }
                             case "Map":
                                 has_map = true
                                 dialogue_set_message("* You got the map!\n* Press M to use it!")
@@ -477,6 +481,10 @@ main :: proc() {
                             fmt.printf("Picked up: %v\n", entity.identifier)
                             unordered_remove(&current_room.entity_tile_data, idx)
                             rl.PlaySound(sound_gold_token)
+
+                            if candy_count >= 2 {
+                                game_win()
+                            }
                         }
                     }
                 }
@@ -492,13 +500,13 @@ main :: proc() {
         rl.BeginTextureMode(target)
 
         // game
-        if current_room.name != "Title_Screen" && current_room.name != "Game_Over_Screen" {
+        if current_room.name != "Title_Screen" && current_room.name != "Game_Over_Screen" && current_room.name != "Win_Screen" {
             //rl.ClearBackground({ 248, 248, 136, 255 })
             rl.ClearBackground({ 11, 10, 22, 255 })
 
             if !should_show_map {
                 draw_tiles_ldtk(tileset, current_room.tile_data)
-                if current_room == &room_balcony {
+                if current_room.name == "Balcony" {
                     rl.DrawTexture(outside_texture, 0, 0, rl.WHITE)
                 }
                 draw_entity_tiles_ldtk(tileset, current_room.entity_tile_offset, current_room.entity_tile_data)
@@ -528,6 +536,12 @@ main :: proc() {
             rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, 0, rl.WHITE)
             rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, 0)[0]), 80 }, 16, 0, rl.RED)
             rl.DrawTextEx(big_font, "to retry", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, 0)[0]), 80 }, 16, 0, rl.WHITE)
+        } else if current_room.name == "Win_Screen" {
+            rl.ClearBackground(rl.GREEN)
+            rl.DrawTextEx(big_font, "You Won! YIPPIIE!", { 65, 32 }, big_font_size, 0, rl.WHITE)
+            rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, 0, rl.WHITE)
+            rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, 0)[0]), 80 }, 16, 0, rl.RED)
+            rl.DrawTextEx(big_font, "to restart!", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, 0)[0]), 80 }, 16, 0, rl.WHITE)
         } else {
             ui_y := i32(128)
             // key
@@ -548,24 +562,30 @@ main :: proc() {
             }
 
             if should_show_inventory {
-                // draw slots
-                rl.DrawRectangleLines(99, 31, 18, 18, rl.RED)
-                rl.DrawRectangleLines(99, 31+16, 18, 18, rl.RED)
-                rl.DrawRectangleLines(99, 31+32, 18, 18, rl.RED)
-                rl.DrawRectangleLines(99, 31+48, 18, 18, rl.RED)
+                // draw outline
+                rl.DrawRectangleLines(98, 30, 20, 20+48, rl.WHITE)
+
                 // draw collected letters
                 letter_src := rl.Rectangle { 144, 64, 16, 16 }
-                rl.DrawTexturePro(tileset, letter_src, { 100, 32, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
-                rl.DrawTexturePro(tileset, letter_src, { 100, 32+16, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
-                rl.DrawTexturePro(tileset, letter_src, { 100, 32+32, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                switch letter_count {
+                    case 3:
+                        rl.DrawTexturePro(tileset, letter_src, { 100, 32+32, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                        rl.DrawText("0", 120, 32+36, 3, rl.WHITE)
+                        fallthrough
+                    case 2:
+                        rl.DrawTexturePro(tileset, letter_src, { 100, 32+16, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                        rl.DrawText("9", 120, 32+20, 3, rl.WHITE)
+                        fallthrough
+                    case 1:
+                        rl.DrawTexturePro(tileset, letter_src, { 100, 32, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                        rl.DrawText("1", 120, 32+4, 3, rl.WHITE)
+                }
 
-                rl.DrawText("1", 118, 32+4, 3, rl.WHITE)
-                rl.DrawText("9", 118, 32+20, 3, rl.WHITE)
-                rl.DrawText("0", 118, 32+36, 3, rl.WHITE)
-
-                // draw map item when collected
-                map_src := rl.Rectangle { 128, 64, 16, 16 }
-                rl.DrawTexturePro(tileset, map_src, { 100, 32+48, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                // draw map when collected
+                if has_map {
+                    map_src := rl.Rectangle { 128, 64, 16, 16 }
+                    rl.DrawTexturePro(tileset, map_src, { 100, 32+48, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                }
 
                 rl.DrawText("Inventory", 80, 16, 4, rl.WHITE)
             }

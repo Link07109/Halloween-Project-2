@@ -136,6 +136,8 @@ load_entity_layer_ldtk :: proc(room: ^Room, rooms_map: map[string]^Room, layer: 
                 case "Statue":
                     tiles[idx].identifier = "Statue" 
             }
+        } else if val.identifier == "Spike" {
+            tiles[idx].identifier = "Spike"
         }
         //fmt.printf("-------- %v\n", tiles[idx].identifier)
     }
