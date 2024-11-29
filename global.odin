@@ -61,6 +61,7 @@ hide_everything :: proc() {
 
 reset_data :: proc() {
     hide_everything()
+    player_pos = { 112, 64 }
     player_sanity = i32(300)
     key_count = 0
     candy_count = 0
