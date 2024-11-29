@@ -87,6 +87,7 @@ load_audio :: proc() {
 
 room_title_screen,
 room_game_over,
+room_win,
 room_main_hall,
 room_left,
 room_secret,
@@ -110,6 +111,9 @@ load_rooms :: proc() {
     room_game_over = Room {
         name = "Game_Over_Screen",
         music = rl.LoadMusicStream("Resources/Audio/zenonia-2-OST-Intro.wav"),
+    }
+    room_win = Room {
+        name = "Win_Screen",
     }
 
     room_main_hall = Room {
@@ -233,6 +237,7 @@ game_over :: proc() {
 game_win :: proc() {
     // yippi !
     rl.PlaySound(sound_spirit_gem_get)
+    current_room = &room_win
 }
 
 dialogue_message: cstring
@@ -430,10 +435,12 @@ main :: proc() {
                         //fmt.printf("entity: %v\n", entity)
                         switch entity.identifier {
                             case "Sign":
-                                //dialogue_set_message("* Reading sign...")
+                                if !rl.IsSoundPlaying(sound_beware) {
+                                    rl.PlaySound(sound_beware)
+                                }
                                 continue
                             case "Pot":
-                                dialogue_set_message("* Just a normal pot,\nnothing to see here")
+                                dialogue_set_message("* Just a normal pot.\nNothing to see here")
                                 continue
                             case "Statue":
                                 if !rl.IsSoundPlaying(sound_dimensional) {
