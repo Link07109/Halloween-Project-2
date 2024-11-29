@@ -517,10 +517,10 @@ main :: proc() {
         } else if current_room.name == "Game_Over_Screen" {
             rl.ClearBackground(rl.BLACK)
             rl.DrawTextEx(big_font, "YOU DIED", { 65, 32 }, big_font_size, 0, rl.WHITE)
-            rl.DrawTextEx(default_font, reason_death, { 60, 60 }, default_font_size, 1, rl.WHITE)
-            rl.DrawText("Press", 50, 80, 10, rl.WHITE)
-            rl.DrawText("[ENTER]", 50 + rl.MeasureText("Press ", 10), 80, 10, rl.RED)
-            rl.DrawText("to retry", 50 + rl.MeasureText("Press [ENTER] ", 10), 80, 10, rl.WHITE)
+            rl.DrawTextEx(default_font, reason_death, { 60, 64 }, default_font_size, 1, rl.WHITE)
+            rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, 0, rl.WHITE)
+            rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, 0)[0]), 80 }, 16, 0, rl.RED)
+            rl.DrawTextEx(big_font, "to retry", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, 0)[0]), 80 }, 16, 0, rl.WHITE)
         } else {
             ui_y := i32(128)
             // key
@@ -536,20 +536,29 @@ main :: proc() {
 
             if should_show_inputbox {
                 inputbox_draw()
-            }
-            if should_show_dialogue {
+            } else if should_show_dialogue {
                 dialogue_draw(dialogue_message)
             }
 
             if should_show_inventory {
+                // draw slots
+                rl.DrawRectangleLines(99, 31, 18, 18, rl.RED)
+                rl.DrawRectangleLines(99, 31+16, 18, 18, rl.RED)
+                rl.DrawRectangleLines(99, 31+32, 18, 18, rl.RED)
+                rl.DrawRectangleLines(99, 31+48, 18, 18, rl.RED)
                 // draw collected letters
                 letter_src := rl.Rectangle { 144, 64, 16, 16 }
-                rl.DrawTexturePro(tileset, letter_src, { 50-7, 64, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
-                rl.DrawText(fmt.ctprintf("%v", letter_count), 60, 64+4, 3, rl.WHITE)
+                rl.DrawTexturePro(tileset, letter_src, { 100, 32, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                rl.DrawTexturePro(tileset, letter_src, { 100, 32+16, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                rl.DrawTexturePro(tileset, letter_src, { 100, 32+32, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+
+                rl.DrawText("1", 118, 32+4, 3, rl.WHITE)
+                rl.DrawText("9", 118, 32+20, 3, rl.WHITE)
+                rl.DrawText("0", 118, 32+36, 3, rl.WHITE)
 
                 // draw map item when collected
                 map_src := rl.Rectangle { 128, 64, 16, 16 }
-                rl.DrawTexturePro(tileset, map_src, { 50-7, 64+16, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                rl.DrawTexturePro(tileset, map_src, { 100, 32+48, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
 
                 rl.DrawText("Inventory", 80, 16, 4, rl.WHITE)
             }

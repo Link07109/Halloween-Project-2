@@ -22,17 +22,17 @@ player_feet_collider := rl.Rectangle {
 
 player_run_right := Animation {
     num_frames = 2,
-    frame_length = 0.25,
+    frame_length = 0.125,
     name = .RunRight,
 }
 player_run_up := Animation {
     num_frames = 2,
-    frame_length = 0.25,
+    frame_length = 0.125,
     name = .RunUp,
 }
 player_run_down := Animation {
     num_frames = 2,
-    frame_length = 0.25,
+    frame_length = 0.125,
     name = .RunDown,
 }
 
