@@ -2731,7 +2731,7 @@
 									"id": "V_String",
 									"params": ["Upstairs_Hallway"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [189,70], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [189] }, { "id": "V_Float", "params": [70] } ] }
 							],
 							"__worldX": 672,
 							"__worldY": -208
@@ -2999,22 +2999,7 @@
 					"autoLayerTiles": [],
 					"seed": 8107785,
 					"overrideTilesetUid": null,
-					"gridTiles": [
-						{ "px": [96,32], "src": [144,32], "f": 0, "t": 31, "d": [34], "a": 1 },
-						{ "px": [112,32], "src": [160,32], "f": 0, "t": 32, "d": [35], "a": 1 },
-						{ "px": [128,32], "src": [160,16], "f": 0, "t": 21, "d": [36], "a": 1 },
-						{ "px": [64,48], "src": [48,48], "f": 0, "t": 36, "d": [46], "a": 1 },
-						{ "px": [80,48], "src": [64,48], "f": 0, "t": 37, "d": [47], "a": 1 },
-						{ "px": [96,48], "src": [80,48], "f": 0, "t": 38, "d": [48], "a": 1 },
-						{ "px": [112,48], "src": [96,48], "f": 0, "t": 39, "d": [49], "a": 1 },
-						{ "px": [64,64], "src": [48,64], "f": 0, "t": 47, "d": [60], "a": 1 },
-						{ "px": [80,64], "src": [64,64], "f": 0, "t": 48, "d": [61], "a": 1 },
-						{ "px": [96,64], "src": [80,64], "f": 0, "t": 49, "d": [62], "a": 1 },
-						{ "px": [112,64], "src": [96,64], "f": 0, "t": 50, "d": [63], "a": 1 },
-						{ "px": [80,80], "src": [160,16], "f": 0, "t": 21, "d": [75], "a": 1 },
-						{ "px": [96,80], "src": [160,32], "f": 0, "t": 32, "d": [76], "a": 1 },
-						{ "px": [112,80], "src": [144,32], "f": 0, "t": 31, "d": [77], "a": 1 }
-					],
+					"gridTiles": [],
 					"entityInstances": []
 				},
 				{
@@ -4289,7 +4274,7 @@
 									"id": "V_String",
 									"params": ["Upstairs_Hallway"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [30,70], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [30] }, { "id": "V_Float", "params": [70] } ] }
 							],
 							"__worldX": 432,
 							"__worldY": -208

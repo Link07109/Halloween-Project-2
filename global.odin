@@ -43,7 +43,8 @@ Door :: struct {
 }
 
 Spike :: struct {
-    coll: rl.Rectangle
+    coll: rl.Rectangle,
+    up: bool
 }
 
 letter_count,
@@ -81,6 +82,7 @@ load_entity_layer_ldtk :: proc(room: ^Room, rooms_map: map[string]^Room, layer: 
 
     tiles := make([dynamic]Entity, len(iter))
     door_counter: int
+    spike_counter: int
 
     for val, idx in iter {
         entity_tile := val.tile.? or_else { x = 0, y = 0 }
@@ -138,6 +140,8 @@ load_entity_layer_ldtk :: proc(room: ^Room, rooms_map: map[string]^Room, layer: 
             }
         } else if val.identifier == "Spike" {
             tiles[idx].identifier = "Spike"
+            room.spikes[spike_counter] = Spike { coll = { f32(val.px.x), f32(val.px.y), f32(val.width), f32(val.height) } }
+            spike_counter += 1
         }
         //fmt.printf("-------- %v\n", tiles[idx].identifier)
     }

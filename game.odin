@@ -390,6 +390,25 @@ main :: proc() {
                     //dialogue_set_message("* This candy might be helpful.\n* Take it for entering the\ncorrect number")
                 //}
 
+                for &spike in current_room.spikes {
+                    if player_collided_with(spike.coll) {
+                        game_over()
+                    }
+
+                    // move spike
+                    if spike.up {
+                        spike.coll.y -= 1.5
+                    } else {
+                        spike.coll.y += 1.5
+                    }
+
+                    if spike.coll.y >= 80 {
+                        spike.up = true
+                    } else if spike.coll.y <= 32 {
+                        spike.up = false
+                    }
+                }
+
                 for &door in current_room.doors {
                     if player_collided_with(door.coll) && !door.collided_with {
                         should_show_dialogue = false
@@ -433,14 +452,15 @@ main :: proc() {
                     // door logic already done
                     if entity.identifier == "Door" {
                         continue
+                    // dont draw spikes here bc they get drawn when they move
+                    } else if entity.identifier == "Spike" {
+                        unordered_remove(&current_room.entity_tile_data, idx)
+                        continue
                     }
 
                     entity_coll := rl.Rectangle { entity.dst.x, entity.dst.y, f32(entity.width), f32(entity.height) }
                     if player_collided_with(entity_coll) {
                         switch entity.identifier {
-                            case "Spike":
-                                game_over()
-                                continue
                             case "Sign":
                                 if !rl.IsSoundPlaying(sound_beware) {
                                     rl.PlaySound(sound_beware)
@@ -510,6 +530,10 @@ main :: proc() {
                     rl.DrawTexture(outside_texture, 0, 0, rl.WHITE)
                 }
                 draw_entity_tiles_ldtk(tileset, current_room.entity_tile_offset, current_room.entity_tile_data)
+                spike_src := rl.Rectangle { 128, 32, 16, 16 }
+                for &spike in current_room.spikes {
+                    rl.DrawTexturePro(tileset, spike_src, spike.coll, { 0, 0 }, 0, rl.WHITE)
+                }
                 draw_tiles_ldtk(tileset, current_room.custom_tile_data)
                 handle_collisions(current_room)
             }
