@@ -39,9 +39,14 @@ load_fonts :: proc() {
 //music_snowpeak,
 //music_mini_boss,
 //music_guardian,
+//music_balcony,
+music_rain,
+music_deep_inside,
+music_twilight,
 music_dark_memories,
 music_to_the_moon,
-music_lavender: rl.Music
+music_lavender,
+music_zenonia: rl.Music
 
 //sound_typing,
 //sound_twilit_intro,
@@ -60,22 +65,27 @@ sound_correct,
 sound_beware: rl.Sound
 
 load_audio :: proc() {
-    music_dark_memories = rl.LoadMusicStream("Resources/Audio/darkMemories.wav")
     // music_zant = rl.LoadMusicStream("Resources/Audio/zant.wav")
-    // music_to_the_moon = rl.LoadMusicStream("Resources/Audio/to the moon.wav")
     // music_snowpeak = rl.LoadMusicStream("Resources/Audio/snowpeak.wav")
     // music_mini_boss = rl.LoadMusicStream("Resources/Audio/miniBoss.wav")
-    music_lavender = rl.LoadMusicStream("Resources/Audio/lavender.wav")
     // music_guardian = rl.LoadMusicStream("Resources/Audio/guardian.wav")
+    //music_balcony = rl.LoadMusicStream("Resources/balcony.wav"),
+    music_rain = rl.LoadMusicStream("Resources/Audio/Rain-Theme-Zenonia.wav")
+    music_deep_inside = rl.LoadMusicStream("Resources/Audio/deep inside.wav")
+    music_twilight = rl.LoadMusicStream("Resources/Audio/twilight.wav")
+    music_dark_memories = rl.LoadMusicStream("Resources/Audio/darkMemories.wav")
+    music_to_the_moon = rl.LoadMusicStream("Resources/Audio/to the moon.wav")
+    music_lavender = rl.LoadMusicStream("Resources/Audio/lavender.wav")
+    music_zenonia = rl.LoadMusicStream("Resources/Audio/zenonia-2-OST-Intro.wav")
 
-    sound_witch_laugh = rl.LoadSound("Resources/Audio/witchlaugh.wav")
     // sound_typing = rl.LoadSound("Resources/Audio/typing.wav")
     // sound_twilit_intro = rl.LoadSound("Resources/Audio/twilit intro.wav")
+    // sound_oot_game_over = rl.LoadSound("Resources/Audio/ootGameOver.wav")
+    sound_witch_laugh = rl.LoadSound("Resources/Audio/witchlaugh.wav")
     sound_tp_game_over = rl.LoadSound("Resources/Audio/tpGameOver.wav")
     sound_teleport = rl.LoadSound("Resources/Audio/teleport.wav")
     sound_spirit_gem_get = rl.LoadSound("Resources/Audio/Spirit-Gem-Get.wav")
     sound_run_roar = rl.LoadSound("Resources/Audio/runRAWR.wav")
-    // sound_oot_game_over = rl.LoadSound("Resources/Audio/ootGameOver.wav")
     sound_link_scream1 = rl.LoadSound("Resources/Audio/linkscream1.wav")
     sound_link_scream2 = rl.LoadSound("Resources/Audio/linkscream2.wav")
     sound_gold_token = rl.LoadSound("Resources/Audio/goldToken.wav")
@@ -106,11 +116,11 @@ current_room: ^Room
 load_rooms :: proc() {
     room_title_screen = Room {
         name = "Title_Screen",
-        music = rl.LoadMusicStream("Resources/Audio/twilight.wav"),
+        music = music_twilight
     }
     room_game_over = Room {
         name = "Game_Over_Screen",
-        music = rl.LoadMusicStream("Resources/Audio/zenonia-2-OST-Intro.wav"),
+        music = music_zenonia
     }
     room_win = Room {
         name = "Win_Screen",
@@ -138,7 +148,7 @@ load_rooms :: proc() {
     }
     room_basement = Room {
         name = "Basement",
-        music = rl.LoadMusicStream("Resources/Audio/deep inside.wav"),
+        music = music_deep_inside,
         map_pos = { 154, 70 }
     }
     room_bedroom = Room {
@@ -173,8 +183,7 @@ load_rooms :: proc() {
     }
     room_balcony = Room {
         name = "Balcony",
-        music = rl.LoadMusicStream("Resources/Audio/Rain-Theme-Zenonia.wav"),
-        //rl.LoadMusicStream("Resources/balcony.wav"),
+        music = music_rain,
         map_pos = { 122, 30 }
     }
 }
@@ -359,13 +368,13 @@ main :: proc() {
                 case "Game_Over_Screen":
                     paused = true
                     if rl.IsKeyPressed(.ENTER) {
-                        reset_data()
+                        reset_data(rooms_map)
                         current_room = &room_title_screen
                     }
                 case "Win_Screen":
                     paused = true
                     if rl.IsKeyPressed(.ENTER) {
-                        reset_data()
+                        reset_data(rooms_map)
                         current_room = &room_title_screen
                     }
             }
@@ -420,6 +429,7 @@ main :: proc() {
                             } else {
                                 key_count -= 1
                                 door.locked_with = ""
+                                door.src = { 96, 112, 32, 16 }
                             }
                         } else if door.locked_with == "Code" {
                             should_show_inputbox = true
@@ -448,9 +458,10 @@ main :: proc() {
                     }
                 }
 
-                for entity, idx in current_room.entity_tile_data {
+                for &entity, idx in current_room.entity_tile_data {
                     // door logic already done
                     if entity.identifier == "Door" {
+                        unordered_remove(&current_room.entity_tile_data, idx)
                         continue
                     // dont draw spikes here bc they get drawn when they move
                     } else if entity.identifier == "Spike" {
@@ -530,8 +541,11 @@ main :: proc() {
                     rl.DrawTexture(outside_texture, 0, 0, rl.WHITE)
                 }
                 draw_entity_tiles_ldtk(tileset, current_room.entity_tile_offset, current_room.entity_tile_data)
+                for door in current_room.doors {
+                    rl.DrawTexturePro(tileset, door.src, door.coll, { 0, 0 }, 0, rl.WHITE)
+                }
                 spike_src := rl.Rectangle { 128, 32, 16, 16 }
-                for &spike in current_room.spikes {
+                for spike in current_room.spikes {
                     rl.DrawTexturePro(tileset, spike_src, spike.coll, { 0, 0 }, 0, rl.WHITE)
                 }
                 draw_tiles_ldtk(tileset, current_room.custom_tile_data)
@@ -654,7 +668,6 @@ main :: proc() {
     rl.CloseWindow()
 
     for _, room in rooms_map {
-        //delete(room.custom_tile_data)
         delete(room.entity_tile_data)
     }
     delete(rooms_map)

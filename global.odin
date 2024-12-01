@@ -35,6 +35,7 @@ Room :: struct {
 }
 
 Door :: struct {
+    src: rl.Rectangle,
     locked_with: string,
     coll: rl.Rectangle,
     collided_with: bool,
@@ -60,15 +61,30 @@ hide_everything :: proc() {
     should_show_map = false
 }
 
-reset_data :: proc() {
+clean_up :: proc(rooms_map: map[string]^Room) {
+    rooms_map := rooms_map
+    for _, room in rooms_map {
+        delete(room.entity_tile_data)
+    }
+    //delete(rooms_map)
+    if has_made_nopers {
+        delete(nopers)
+    }
+    free_all(context.temp_allocator)
+}
+
+reset_data :: proc(rooms_map: map[string]^Room) {
+    rooms_map := rooms_map
     hide_everything()
+    clean_up(rooms_map)
+    load_rooms()
+    load_world(current_room, rooms_map)
     player_pos = { 112, 64 }
     player_sanity = i32(300)
     key_count = 0
     candy_count = 0
     letter_count = 0
     has_map = false
-    // probably have to reset the world too (somehow) so that doors re-lock and items respawn
 }
 
 tile_size := 16
@@ -107,10 +123,13 @@ load_entity_layer_ldtk :: proc(room: ^Room, rooms_map: map[string]^Room, layer: 
             switch locked_with {
                 case "Key":
                     door.locked_with = "Key"
+                    door.src = { 64, 128, 32, 16 }
                 case "Code":
                     door.locked_with = "Code"
+                    door.src = { 64, 144, 16, 16 }
                 case "Puzzle":
                     door.locked_with = "Puzzle"
+                    door.src = { 160, 160, 16, 16 }
             }
             room.doors[door_counter] = door
             door_counter += 1

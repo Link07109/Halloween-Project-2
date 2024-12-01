@@ -56,6 +56,7 @@ inputbox_process :: proc(door: ^Door, correct_answer: cstring) {
         rl.PlaySound(sound_correct)
         if correct_answer == "3" {
             dialogue_set_message("* Correct")
+            door.src = { 160, 0, 16, 16 }
         } else {
             dialogue_set_message("* You may enter")
         }
