@@ -238,9 +238,17 @@ update_room_music :: proc(current_room: ^Room, current_music: ^rl.Music) {
     }
 }
 
+timer_soundfx: Timer
+timer_link_scream: Timer
+has_died: bool
+
 game_over :: proc() {
+    has_died = true
+}
+
+link_death :: proc() {
     rl.PlaySound(sound_link_scream2)
-    current_room = &room_game_over
+    timer_start(&timer_link_scream, 1)
 }
 
 game_win :: proc() {
@@ -391,6 +399,14 @@ main :: proc() {
                     should_show_dialogue = false
                 }
 
+                timer_update(&timer_soundfx)
+                if timer_done(&timer_soundfx) {
+                    link_death()
+                }
+                timer_update(&timer_link_scream)
+                if timer_done(&timer_link_scream) {
+                    current_room = &room_game_over
+                }
                 player_movement()
                 player_update_sanity()
 
@@ -401,7 +417,10 @@ main :: proc() {
 
                 for &spike in current_room.spikes {
                     if player_collided_with(spike.coll) {
-                        game_over()
+                        if !has_died {
+                            link_death()
+                            game_over()
+                        }
                     }
 
                     // move spike
@@ -490,10 +509,13 @@ main :: proc() {
                                 // this used to kill u, idk if it still does
                                 continue
                             case "Mirror":
-                                dialogue_set_message("* You look into the mirror but\ndon't see your reflection...")
-                                rl.PlaySound(sound_witch_laugh)
-                                reason_death = "You shouldn't have done that"
-                                game_over()
+                                if !has_died {
+                                    dialogue_set_message("* You look into the mirror but\ndon't see your reflection...")
+                                    rl.PlaySound(sound_witch_laugh)
+                                    timer_start(&timer_soundfx, 2)
+                                    reason_death = "You shouldn't have done that"
+                                    game_over()
+                                }
                                 continue
                             case "Letter":
                                 letter_count += 1

@@ -65,6 +65,7 @@ inputbox_process :: proc(door: ^Door, correct_answer: cstring) {
     } else {
         if correct_answer == "3" {
             rl.PlaySound(sound_run_roar)
+            timer_start(&timer_soundfx, 4)
             reason_death = "Learn how to count"
         } else {
             reason_death = "Better luck next time"

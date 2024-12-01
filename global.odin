@@ -85,6 +85,7 @@ reset_data :: proc(rooms_map: map[string]^Room) {
     candy_count = 0
     letter_count = 0
     has_map = false
+    has_died = false
 }
 
 tile_size := 16
