@@ -68,6 +68,7 @@ inputbox_process :: proc(door: ^Door, correct_answer: cstring) {
             timer_start(&timer_soundfx, 4)
             reason_death = "Learn how to count"
         } else {
+            link_death()
             reason_death = "Better luck next time"
         }
         game_over()

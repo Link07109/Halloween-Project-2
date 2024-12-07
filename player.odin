@@ -53,6 +53,7 @@ player_update_sanity :: proc() {
         if player_sanity <= 0 {
             // death animation
             reason_death = "you committed suicide"
+            link_death()
             game_over()
         }
     }
