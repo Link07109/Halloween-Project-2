@@ -819,7 +819,7 @@
 			"savedSelections": [],
 			"cachedPixelData": {
 				"opaqueTiles": "0000111110000001111000000000000000000000000000000000000000011000000010000001011101000111111000001110001110011111001000001",
-				"averageColors": "00000000b7550000fa01fa11f855f754f79b9c77800000000000c7650000fa01fa11f533f72377898c77bc9900000000875400000000000000002000ba669c778bbb00000000000056666555565657669a5397669963975300000000000076668555676577660000aca88eca65250000000000000000f643f5430000000055554334498800000786f7860000753274327766a723c987f774a422f976f000f7860000f433000000000000f532f111f774f765f643f7650000e877e877dccdfa98f533f633f533000000000000f765f877f6447abcfba9f532f535f865f765f65400000000f976e432d532ceeeb754b543f986"
+				"averageColors": "00000000b7550000fa01fa11f855f754f79b9c77000000000000c7650000fa01fa11f533f72377898c77bc9900000000875400000000000000002000ba669c778bbb00000000000056666555565657669a5397669963975300000000000076668555676577660000aca88eca65250000000000000000f643f5430000000055554334498800000786f7860000753274327766a723c987f774a422f976f000f7860000f4330000e766e766f532f111f774f765f643f7650000e877e877dccdfa98f533f633f533000000000000f765f877f6447abcfba9f532f535f865f765f6540000d865f976e432d654ceeeb754b543f986"
 			}
 		}
 	], "enums": [
@@ -933,7 +933,7 @@
 									"id": "V_String",
 									"params": ["Secret_Room"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,28], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [100] }, { "id": "V_Float", "params": [28] } ] }
 							],
 							"__worldX": 544,
 							"__worldY": 112
@@ -959,7 +959,7 @@
 									"id": "V_String",
 									"params": ["Storage_Closet"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [120,118], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [120] }, { "id": "V_Float", "params": [118] } ] }
 							],
 							"__worldX": 560,
 							"__worldY": 0
@@ -979,7 +979,7 @@
 							"fieldInstances": [
 								{ "__identifier": "lockedWith", "__type": "String", "__value": "", "__tile": null, "defUid": 548, "realEditorValues": [] },
 								{ "__identifier": "destRoom", "__type": "String", "__value": "Main_Hall", "__tile": null, "defUid": 484, "realEditorValues": [] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [33,64], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [33] }, { "id": "V_Float", "params": [64] } ] }
 							],
 							"__worldX": 656,
 							"__worldY": 48
@@ -1258,7 +1258,7 @@
 									"id": "V_String",
 									"params": ["Left_Room"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [120,28], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [120] }, { "id": "V_Float", "params": [28] } ] }
 							],
 							"__worldX": 560,
 							"__worldY": -16
@@ -1482,6 +1482,7 @@
 					"gridTiles": [
 						{ "px": [80,0], "src": [32,128], "f": 0, "t": 90, "d": [5], "a": 1 },
 						{ "px": [128,0], "src": [32,128], "f": 0, "t": 90, "d": [8], "a": 1 },
+						{ "px": [32,48], "src": [0,0], "f": 0, "t": 0, "d": [44], "a": 1 },
 						{ "px": [96,112], "src": [64,112], "f": 0, "t": 81, "d": [104], "a": 1 },
 						{ "px": [112,112], "src": [64,112], "f": 1, "t": 81, "d": [105], "a": 1 }
 					],
@@ -1532,7 +1533,7 @@
 									"id": "V_String",
 									"params": ["Upper_Chamber"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [105,90], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [105] }, { "id": "V_Float", "params": [90] } ] }
 							],
 							"__worldX": 768,
 							"__worldY": 0
@@ -1555,7 +1556,7 @@
 									"id": "V_String",
 									"params": ["Left_Room"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [193,64], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [193] }, { "id": "V_Float", "params": [64] } ] }
 							],
 							"__worldX": 672,
 							"__worldY": 48
@@ -1578,7 +1579,7 @@
 									"id": "V_String",
 									"params": ["Library"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [33,64], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [33] }, { "id": "V_Float", "params": [64] } ] }
 							],
 							"__worldX": 880,
 							"__worldY": 48
@@ -1879,7 +1880,7 @@
 									"id": "V_String",
 									"params": ["Bedroom"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [114,28], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [114] }, { "id": "V_Float", "params": [28] } ] }
 							],
 							"__worldX": 1008,
 							"__worldY": 112
@@ -1905,7 +1906,7 @@
 									"id": "V_String",
 									"params": ["Basement"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [150,120], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [150] }, { "id": "V_Float", "params": [120] } ] }
 							],
 							"__worldX": 1056,
 							"__worldY": 16
@@ -1944,7 +1945,7 @@
 							"fieldInstances": [
 								{ "__identifier": "lockedWith", "__type": "String", "__value": "", "__tile": null, "defUid": 548, "realEditorValues": [] },
 								{ "__identifier": "destRoom", "__type": "String", "__value": "Main_Hall", "__tile": null, "defUid": 484, "realEditorValues": [] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [193,64], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [193] }, { "id": "V_Float", "params": [64] } ] }
 							],
 							"__worldX": 896,
 							"__worldY": 48
@@ -2185,7 +2186,7 @@
 									"id": "V_String",
 									"params": ["Left_Room"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,112], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [100] }, { "id": "V_Float", "params": [112] } ] }
 							],
 							"__worldX": 544,
 							"__worldY": 128
@@ -2454,7 +2455,7 @@
 									"id": "V_String",
 									"params": ["Library"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [114,104], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [114] }, { "id": "V_Float", "params": [104] } ] }
 							],
 							"__worldX": 1008,
 							"__worldY": 128
@@ -2727,7 +2728,7 @@
 									"id": "V_String",
 									"params": ["Upstairs_Hallway"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [189,70], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [189] }, { "id": "V_Float", "params": [70] } ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [191,64], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [191] }, { "id": "V_Float", "params": [64] } ] }
 							],
 							"__worldX": 672,
 							"__worldY": -208
@@ -2750,7 +2751,7 @@
 									"id": "V_String",
 									"params": ["Bathroom"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [26,64], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [26] }, { "id": "V_Float", "params": [64] } ] }
 							],
 							"__worldX": 880,
 							"__worldY": -208
@@ -3040,7 +3041,7 @@
 									"id": "V_String",
 									"params": ["Gallery"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,64], "__tile": null, "defUid": 486, "realEditorValues": [ null, { "id": "V_Float", "params": [64] } ] }
 							],
 							"__worldX": 448,
 							"__worldY": -208
@@ -3063,7 +3064,7 @@
 									"id": "V_String",
 									"params": ["Upper_Chamber"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [50,64], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [50] }, { "id": "V_Float", "params": [64] } ] }
 							],
 							"__worldX": 656,
 							"__worldY": -208
@@ -3368,9 +3369,7 @@
 						{ "px": [144,96], "src": [144,96], "f": 0, "t": 75, "d": [93], "a": 1 },
 						{ "px": [160,96], "src": [144,96], "f": 0, "t": 75, "d": [94], "a": 1 },
 						{ "px": [176,96], "src": [144,96], "f": 0, "t": 75, "d": [95], "a": 1 },
-						{ "px": [192,96], "src": [144,96], "f": 0, "t": 75, "d": [96], "a": 1 },
-						{ "px": [96,112], "src": [144,96], "f": 0, "t": 75, "d": [104], "a": 1 },
-						{ "px": [112,112], "src": [144,96], "f": 0, "t": 75, "d": [105], "a": 1 }
+						{ "px": [192,96], "src": [144,96], "f": 0, "t": 75, "d": [96], "a": 1 }
 					],
 					"entityInstances": []
 				},
@@ -3416,7 +3415,7 @@
 									"id": "V_String",
 									"params": ["Upper_Chamber"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [111,29], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [111] }, { "id": "V_Float", "params": [29] } ] }
 							],
 							"__worldX": 768,
 							"__worldY": -272
@@ -3737,7 +3736,7 @@
 									"id": "V_String",
 									"params": ["Upper_Chamber"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,64], "__tile": null, "defUid": 486, "realEditorValues": [ null, { "id": "V_Float", "params": [64] } ] }
 							],
 							"__worldX": 896,
 							"__worldY": -208
@@ -4001,7 +4000,7 @@
 									"id": "V_String",
 									"params": ["Library"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [100,100], "__tile": null, "defUid": 486, "realEditorValues": [ null, null ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [164,48], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [164] }, { "id": "V_Float", "params": [48] } ] }
 							],
 							"__worldX": 1056,
 							"__worldY": -32
@@ -4270,7 +4269,7 @@
 									"id": "V_String",
 									"params": ["Upstairs_Hallway"]
 								}] },
-								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [30,70], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [30] }, { "id": "V_Float", "params": [70] } ] }
+								{ "__identifier": "destPlayerPos", "__type": "Array<Float>", "__value": [30,64], "__tile": null, "defUid": 486, "realEditorValues": [ { "id": "V_Float", "params": [30] }, { "id": "V_Float", "params": [64] } ] }
 							],
 							"__worldX": 432,
 							"__worldY": -208
