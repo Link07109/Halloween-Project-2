@@ -305,6 +305,9 @@ main :: proc() {
     target := rl.LoadRenderTexture(game_screen_width, game_screen_height)
     rl.SetTextureFilter(target.texture, .POINT)
 
+    shader := rl.LoadShader("scan.vert", "scan.frag")
+    //shader := rl.LoadShader("", "blur.fs")
+
     tileset := rl.LoadTexture("Resources/worldtiles.png")
     outside_texture := rl.LoadTexture("Resources/outside.png")
     game_map_texture := rl.LoadTexture("Resources/map_fullscreen.png")
@@ -668,10 +671,12 @@ main :: proc() {
         // draw render texture
         rl.BeginDrawing()
         
+	rl.BeginShaderMode(shader);
         rl.DrawTexturePro(target.texture, { 0, 0, f32(target.texture.width), -1 * f32(target.texture.height) },
-        { screen_width - f32(game_screen_width)*scale, screen_height - f32(game_screen_height)*scale,
+        { screen_width - f32(game_screen_width)*scale, screen_height - f32(game_screen_height)*scale, // for some reason every example has * 0.5 on both of these numbers
         //{0, 0,
         f32(game_screen_width)*scale, f32(game_screen_height)*scale }, { 0, 0 }, 0, rl.WHITE)
+	rl.EndShaderMode();
 
         rl.EndDrawing()
 
