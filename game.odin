@@ -295,8 +295,8 @@ main :: proc() {
     // ---
 
     rl.InitWindow(i32(screen_width), i32(screen_height), title)
-    rl.SetWindowMinSize(224, 144)
-    rl.SetWindowState({ .WINDOW_MAXIMIZED })
+    rl.SetWindowMinSize(game_screen_width, game_screen_height)
+    rl.SetWindowState({ .WINDOW_MAXIMIZED, .WINDOW_ALWAYS_RUN, .WINDOW_HIGHDPI })
     rl.SetWindowIcon(rl.LoadImage("Resources/tokenPixel.png"))
     rl.SetExitKey(.GRAVE)
     rl.SetTargetFPS(60)
@@ -352,6 +352,10 @@ main :: proc() {
 
         if rl.IsKeyPressed(.F11) {
             rl.ToggleFullscreen()
+        }
+
+        if rl.IsKeyPressed(.E) {
+            rl.SetWindowSize(672, 432)
         }
 
         if rl.WindowShouldClose() {
