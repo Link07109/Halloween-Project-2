@@ -25,10 +25,10 @@ void main() {
     finalColor = vec4(texelColor, 1.0);
 
     // scanlines !
-    //finalColor = texture(texture0, fragTexCoord) * fragColor; (use this if we want to remove the blur)
+    //finalColor = texture(texture0, fragTexCoord) * fragColor; // (use this if we want to remove the blur)
     float y = floor(fragTexCoord.y * size.y);
     if (mod(y,4) == 3) {
-	    finalColor /= 1.2;
+	    finalColor /= 1.25;
     }
 
     // bloom !

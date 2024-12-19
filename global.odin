@@ -80,7 +80,7 @@ reset_data :: proc(rooms_map: map[string]^Room) {
     load_rooms()
     load_world(current_room, rooms_map)
     player_pos = { 112, 64 }
-    player_sanity = i32(300)
+    player_sanity = 300
     key_count = 0
     candy_count = 0
     letter_count = 0
@@ -98,8 +98,8 @@ load_entity_layer_ldtk :: proc(room: ^Room, rooms_map: map[string]^Room, layer: 
     tile_offset.y = f32(layer.px_total_offset_y)
 
     tiles := make([dynamic]Entity, len(iter))
-    door_counter: int
-    spike_counter: int
+    door_counter: u8
+    spike_counter: u8
 
     for val, idx in iter {
         entity_tile := val.tile.? or_else { x = 0, y = 0 }
@@ -127,7 +127,7 @@ load_entity_layer_ldtk :: proc(room: ^Room, rooms_map: map[string]^Room, layer: 
                     door.src = { 64, 128, 32, 16 }
                 case "Code":
                     door.locked_with = "Code"
-                    door.src = { 64, 144, 16, 16 }
+                    door.src = { 64, 160, 16, 16 }
                 case "Puzzle":
                     door.locked_with = "Puzzle"
                     door.src = { 160, 160, 16, 16 }

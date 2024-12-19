@@ -296,7 +296,7 @@ main :: proc() {
 
     rl.InitWindow(i32(screen_width), i32(screen_height), title)
     rl.SetWindowMinSize(game_screen_width, game_screen_height)
-    rl.SetWindowState({ .WINDOW_MAXIMIZED, .WINDOW_ALWAYS_RUN, .WINDOW_HIGHDPI })
+    rl.SetWindowState({ .WINDOW_MAXIMIZED, .VSYNC_HINT, .WINDOW_ALWAYS_RUN, .WINDOW_HIGHDPI })
     rl.SetWindowIcon(rl.LoadImage("Resources/tokenPixel.png"))
     rl.SetExitKey(.GRAVE)
     rl.SetTargetFPS(60)
@@ -354,7 +354,7 @@ main :: proc() {
             rl.ToggleFullscreen()
         }
 
-        if rl.IsKeyPressed(.E) {
+        if rl.IsKeyPressed(.R) {
             rl.SetWindowSize(672, 432)
         }
 
@@ -423,8 +423,12 @@ main :: proc() {
                 //}
 
                 for &spike in current_room.spikes {
+					if spike.coll == { 0, 0, 0, 0 } {
+						break
+					}
                     if player_collided_with(spike.coll) {
                         if !has_died {
+							reason_death = "You got shredded by spikes."
                             link_death()
                             game_over()
                         }
@@ -578,6 +582,7 @@ main :: proc() {
                     rl.DrawTexturePro(tileset, spike_src, spike.coll, { 0, 0 }, 0, rl.WHITE)
                 }
                 draw_tiles_ldtk(tileset, current_room.custom_tile_data)
+                player_edge_collision()
                 handle_collisions(current_room)
             }
 
@@ -675,12 +680,12 @@ main :: proc() {
         // draw render texture
         rl.BeginDrawing()
         
-	rl.BeginShaderMode(shader);
+	    rl.BeginShaderMode(shader)
         rl.DrawTexturePro(target.texture, { 0, 0, f32(target.texture.width), -1 * f32(target.texture.height) },
         { screen_width - f32(game_screen_width)*scale, screen_height - f32(game_screen_height)*scale, // for some reason every example has * 0.5 on both of these numbers
         //{0, 0,
         f32(game_screen_width)*scale, f32(game_screen_height)*scale }, { 0, 0 }, 0, rl.WHITE)
-	rl.EndShaderMode();
+	    rl.EndShaderMode()
 
         rl.EndDrawing()
 

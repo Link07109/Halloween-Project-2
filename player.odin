@@ -111,6 +111,25 @@ player_movement :: proc() {
     player_feet_collider.y = player_pos.y - 9
 }
 
+player_edge_collision :: proc() {
+    if player_pos.x <= 6 {
+        player_pos.x = 7
+        player_feet_collider.x = 7 - 6
+    }
+    if player_pos.x >= 218 {
+        player_pos.x = 217
+        player_feet_collider.x = 217 - 6
+    }
+    if player_pos.y <= 19  {
+        player_pos.y = 20
+        player_feet_collider.y = 20 - 9
+    }
+    if player_pos.y >= 129 {
+        player_pos.y = 128
+        player_feet_collider.y = 128 - 9
+    }
+}
+
 // Minkowski difference
 player_wall_collision :: proc(coll: rl.Rectangle) {
     if rl.CheckCollisionRecs(player_feet_collider, coll) {
