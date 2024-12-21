@@ -530,6 +530,14 @@ main :: proc() {
                                 continue
                             case "Letter":
                                 letter_count += 1
+								switch letter_count {
+									case 1:
+										dialogue_set_message("1")
+									case 2:
+										dialogue_set_message("9")
+									case 3:
+										dialogue_set_message("0")
+								}
                             case "Key":
                                 key_count += 1
                                 dialogue_set_message("* You got a key!")
@@ -538,7 +546,7 @@ main :: proc() {
                                 dialogue_set_message("* You got a piece of candy!")
                             case "Map":
                                 has_map = true
-                                dialogue_set_message("* You got the map!\n* Press M to use it!")
+                                dialogue_set_message("* You got the map!\n* Access it with 'M'")
                         }
                         // pick up item! (removes it from the array of tiles so it wont be checked again or drawn)
                         if !strings.has_prefix(entity.identifier, "\x00") {
