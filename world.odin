@@ -20,20 +20,6 @@ Entity :: struct {
     height: int,
 }
 
-Room :: struct {
-    name: string,
-    music: rl.Music,
-    map_pos: rl.Vector2,
-    doors: [4]Door,
-    spikes: [2]Spike,
-
-    entity_tile_offset: rl.Vector2,
-    entity_tile_data: [dynamic]Entity,
-    custom_tile_data: [112]Tile,
-    tile_data: [112]Tile,
-    collision_tiles: [112]u8,
-}
-
 Door :: struct {
     src: rl.Rectangle,
     locked_with: string,
@@ -48,44 +34,151 @@ Spike :: struct {
     up: bool
 }
 
-letter_count,
-key_count,
-candy_count: u8
-has_map: bool
-reason_death: cstring
+Room :: struct {
+    name: string,
+    music: rl.Music,
+    map_pos: rl.Vector2,
+    doors: [4]Door,
+    spikes: [2]Spike,
 
-hide_everything :: proc() {
-    should_show_inputbox = false
-    should_show_dialogue = false
-    should_show_inventory = false
-    should_show_map = false
+    entity_tile_offset: rl.Vector2,
+    entity_tile_data: [dynamic]Entity,
+    custom_tile_data: [112]Tile,
+    tile_data: [112]Tile,
+    collision_tiles: [112]u8,
 }
 
-clean_up :: proc(rooms_map: map[string]^Room) {
-    rooms_map := rooms_map
-    for _, room in rooms_map {
-        delete(room.entity_tile_data)
+room_title_screen,
+room_game_over,
+room_win,
+room_main_hall,
+room_left,
+room_secret,
+room_storage_closet,
+room_basement,
+room_bedroom,
+room_library,
+room_upper_chamber,
+room_bathroom,
+room_upstairs_hallway,
+room_gallery,
+room_balcony: Room
+
+current_room: ^Room
+
+load_rooms :: proc() {
+    room_title_screen = Room {
+        name = "Title_Screen",
+        music = music_twilight
     }
-    //delete(rooms_map)
-    if has_made_nopers {
-        delete(nopers)
+    room_game_over = Room {
+        name = "Game_Over_Screen",
+        music = music_zenonia
     }
-    free_all(context.temp_allocator)
+    room_win = Room {
+        name = "Win_Screen",
+    }
+
+    room_main_hall = Room {
+        name = "Main_Hall",
+        music = music_dark_memories,
+        map_pos = { 116, 84 }
+    }
+    room_left = Room {
+        name = "Left_Room",
+        music = music_dark_memories,
+        map_pos = { 82, 84 }
+    }
+    room_secret = Room {
+        name = "Secret_Room",
+        music = music_dark_memories,
+        map_pos = { 81, 103 }
+    }
+    room_storage_closet = Room {
+        name = "Storage_Closet",
+        music = music_dark_memories,
+        map_pos = { 84, 67 }
+    }
+    room_basement = Room {
+        name = "Basement",
+        music = music_deep_inside,
+        map_pos = { 154, 70 }
+    }
+    room_bedroom = Room {
+        name = "Bedroom",
+        music = music_dark_memories,
+        map_pos = { 154, 104 }
+    }
+    room_library = Room {
+        name = "Library",
+        music = music_dark_memories,
+        map_pos = { 154, 84 }
+    }
+    room_upper_chamber = Room {
+        name = "Upper_Chamber",
+        music = music_lavender,
+        map_pos = { 122, 48 }
+    }
+    room_bathroom = Room {
+        name = "Bathroom",
+        music = music_lavender,
+        map_pos = { 154, 48 }
+    }
+    room_upstairs_hallway = Room {
+        name = "Upstairs_Hallway",
+        music = music_lavender,
+        map_pos = { 90, 48 }
+    }
+    room_gallery = Room {
+        name = "Gallery",
+        music = music_lavender,
+        map_pos = { 60, 48 }
+    }
+    room_balcony = Room {
+        name = "Balcony",
+        music = music_rain,
+        map_pos = { 122, 30 }
+    }
 }
 
-reset_data :: proc(rooms_map: map[string]^Room) {
-    rooms_map := rooms_map
-    hide_everything()
-    clean_up(rooms_map)
-    load_rooms()
-    load_world(current_room, rooms_map)
-    player_pos = { 112, 64 }
-    player_sanity = 300
-    key_count = 0
-    candy_count = 0
-    letter_count = 0
-    has_map = false
-    has_died = false
+load_world :: proc(candidate_room: ^Room, rooms_map: map[string]^Room) {
+    if project, ok := ldtk.load_from_file("Resources/new world links awakening.ldtk", context.temp_allocator).?; ok {
+        fmt.println("---- Successfully loaded ldtk json!!!")
+
+        candidate_room := candidate_room
+        for level in project.levels {
+            level_name := level.identifier
+
+            if level_name not_in rooms_map {
+                continue
+            }
+            if level_name != candidate_room.name {
+                candidate_room = rooms_map[level_name]
+            }
+            //fmt.printf("---- Level Name: %v\n", level_name)
+            tile_size = project.default_grid_size
+
+            for layer in level.layer_instances {
+                switch layer.type {
+                    case .IntGrid: // floor + walls, collisions
+                        candidate_room.tile_data = load_tile_layer_ldtk(layer.auto_layer_tiles)
+
+                        for val, idx in layer.int_grid_csv {
+                            candidate_room.collision_tiles[idx] = u8(val)
+                        }
+                    case .Entities: // items, interactables
+                        candidate_room.entity_tile_data = load_entity_layer_ldtk(candidate_room, rooms_map, layer, layer.entity_instances, &candidate_room.entity_tile_offset)
+
+                    case .Tiles: // custom tiles
+                        candidate_room.custom_tile_data = load_tile_layer_ldtk(layer.grid_tiles)
+                    case .AutoLayer:
+                }
+            }
+        }
+        free_all(context.allocator)
+    } else {
+        fmt.println("---- ERROR LOADING LDTK JSON!!!!")
+    }
 }
 
 tile_size := 16
