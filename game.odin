@@ -423,12 +423,12 @@ main :: proc() {
                 //}
 
                 for &spike in current_room.spikes {
-					if spike.coll == { 0, 0, 0, 0 } {
-						break
-					}
+                    if spike.coll == { 0, 0, 0, 0 } {
+                        break
+                    }
                     if player_collided_with(spike.coll) {
                         if !has_died {
-							reason_death = "You got shredded by spikes."
+                            reason_death = "You got shredded by spikes."
                             link_death()
                             game_over()
                         }
@@ -530,14 +530,14 @@ main :: proc() {
                                 continue
                             case "Letter":
                                 letter_count += 1
-								switch letter_count {
-									case 1:
-										dialogue_set_message("1")
-									case 2:
-										dialogue_set_message("9")
-									case 3:
-										dialogue_set_message("0")
-								}
+                                switch letter_count {
+                                    case 1:
+                                        dialogue_set_message("1")
+                                    case 2:
+                                        dialogue_set_message("9")
+                                    case 3:
+                                        dialogue_set_message("0")
+                                }
                             case "Key":
                                 key_count += 1
                                 dialogue_set_message("* You got a key!")
@@ -688,12 +688,12 @@ main :: proc() {
         // draw render texture
         rl.BeginDrawing()
         
-	    rl.BeginShaderMode(shader)
+        rl.BeginShaderMode(shader)
         rl.DrawTexturePro(target.texture, { 0, 0, f32(target.texture.width), -1 * f32(target.texture.height) },
         { screen_width - f32(game_screen_width)*scale, screen_height - f32(game_screen_height)*scale, // for some reason every example has * 0.5 on both of these numbers
         //{0, 0,
         f32(game_screen_width)*scale, f32(game_screen_height)*scale }, { 0, 0 }, 0, rl.WHITE)
-	    rl.EndShaderMode()
+        rl.EndShaderMode()
 
         rl.EndDrawing()
 
