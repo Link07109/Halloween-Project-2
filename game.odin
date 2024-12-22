@@ -236,7 +236,7 @@ main :: proc() {
                 }
 
                 for &entity, idx in current_room.entity_tile_data {
-                    // door logic already done
+                    // dont draw door here bc custom door sprites are drawn later
                     if entity.identifier == "Door" {
                         unordered_remove(&current_room.entity_tile_data, idx)
                         continue
