@@ -53,8 +53,8 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
         rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, 0)[0]), 80 }, 16, 0, rl.RED)
         rl.DrawTextEx(big_font, "to retry", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, 0)[0]), 80 }, 16, 0, rl.WHITE)
     } else if current_room.name == "Win_Screen" {
-        rl.ClearBackground(rl.GREEN)
-        rl.DrawTextEx(big_font, "You Won! YIPPIIE!", { 65, 32 }, big_font_size, 0, rl.WHITE)
+        rl.ClearBackground(rl.DARKGREEN)
+        rl.DrawTextEx(big_font, "You Won!", { 65, 32 }, big_font_size, 0, rl.WHITE)
         rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, 0, rl.WHITE)
         rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, 0)[0]), 80 }, 16, 0, rl.RED)
         rl.DrawTextEx(big_font, "to restart!", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, 0)[0]), 80 }, 16, 0, rl.WHITE)
