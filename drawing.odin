@@ -17,6 +17,7 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
             if current_room.name == "Balcony" {
                 rl.DrawTexture(outside_texture, 0, 0, rl.WHITE)
             }
+            draw_tiles_ldtk(tileset, current_room.custom_tile_data)
             draw_entity_tiles_ldtk(tileset, current_room.entity_tile_offset, current_room.entity_tile_data)
             for door in current_room.doors {
                 rl.DrawTexturePro(tileset, door.src, door.coll, { 0, 0 }, 0, rl.WHITE)
@@ -25,7 +26,6 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
             for spike in current_room.spikes {
                 rl.DrawTexturePro(tileset, spike_src, spike.coll, { 0, 0 }, 0, rl.WHITE)
             }
-            draw_tiles_ldtk(tileset, current_room.custom_tile_data)
             player_edge_collision()
             handle_collisions(current_room)
         }

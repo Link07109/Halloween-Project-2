@@ -141,6 +141,15 @@ main :: proc() {
                     }
             }
 
+			timer_update(&timer_soundfx)
+			if timer_done(&timer_soundfx) {
+				link_death()
+			}
+			timer_update(&timer_link_scream)
+			if timer_done(&timer_link_scream) {
+				current_room = &room_game_over
+			}
+
             // actually playing the game!
             if !paused {
                 if rl.IsKeyPressed(Inventory_Toggle) {
@@ -153,16 +162,13 @@ main :: proc() {
                     should_show_dialogue = false
                 }
 
-                timer_update(&timer_soundfx)
-                if timer_done(&timer_soundfx) {
-                    link_death()
-                }
-                timer_update(&timer_link_scream)
-                if timer_done(&timer_link_scream) {
-                    current_room = &room_game_over
-                }
                 player_movement()
                 player_update_sanity()
+				if player_sanity <= 0 {
+					reason_death = "you committed suicide"
+					link_death()
+					game_over(current_music)
+				}
 
                 //if current_room.name == "Basement" {
                     // TODO: make this only happen upon entering the room
@@ -174,11 +180,9 @@ main :: proc() {
                         break
                     }
                     if player_collided_with(spike.coll) {
-                        if !has_died {
-                            reason_death = "You got shredded by spikes."
-                            link_death()
-                            game_over()
-                        }
+						reason_death = "You got shredded by spikes."
+						link_death()
+						game_over(current_music)
                     }
 
                     // move spike
@@ -212,7 +216,7 @@ main :: proc() {
                             should_show_inputbox = true
                             inputbox_show("How many letters are there?", 1)
                             if rl.IsKeyPressed(.ENTER) {
-                                inputbox_process(&door, "3")
+                                inputbox_process(&door, "3", current_music)
                                 should_show_inputbox = false
                             }
                             break
@@ -220,7 +224,7 @@ main :: proc() {
                             should_show_inputbox = true
                             inputbox_show("Enter in a number", 4)
                             if rl.IsKeyPressed(.ENTER) {
-                                inputbox_process(&door, "5190")
+                                inputbox_process(&door, "5190", current_music)
                                 should_show_inputbox = false
                             }
                             break
@@ -267,13 +271,11 @@ main :: proc() {
                                 // this used to kill u, idk if it still does
                                 continue
                             case "Mirror":
-                                if !has_died {
-                                    dialogue_set_message("* You look into the mirror but\ndon't see your reflection...")
-                                    rl.PlaySound(sound_witch_laugh)
-                                    timer_start(&timer_soundfx, 2)
-                                    reason_death = "You shouldn't have done that"
-                                    game_over()
-                                }
+								dialogue_set_message("* You look into the mirror,\nbut don't see your reflection...")
+								rl.PlaySound(sound_witch_laugh)
+								timer_start(&timer_soundfx, 2)
+								reason_death = "You shouldn't have done that"
+								game_over(current_music)
                                 continue
                             case "Letter":
                                 letter_count += 1

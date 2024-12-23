@@ -6,14 +6,17 @@ import "core:math"
 
 player_sanity := i32(300)
 player_sanity_frame_timer: f32
+
 player_pos := rl.Vector2 { 112, 64 }
 player_vel: rl.Vector2
 player_run_speed := f32(65)
-player_stop_animating,
-up_down,
-player_flip: bool
+
 player_current_anim: Animation
 player_facing := "down"
+
+player_stop_animating,
+player_up_down,
+player_flip: bool
 
 player_feet_collider := rl.Rectangle {
     width = 12,
@@ -49,13 +52,6 @@ player_update_sanity :: proc() {
     for player_sanity_frame_timer > 1 {
         player_sanity -= 1
         player_sanity_frame_timer -= 1
-
-        if player_sanity <= 0 {
-            // death animation
-            reason_death = "you committed suicide"
-            link_death()
-            game_over()
-        }
     }
 }
 
@@ -64,24 +60,24 @@ player_movement :: proc() {
         player_vel.y = -player_run_speed
         if player_current_anim.name != .RunUp {
             player_current_anim = player_run_up
-            up_down = true
+            player_up_down = true
         }
     } else if rl.IsKeyDown(Player_Move_Down) {
         player_vel.y = player_run_speed
         if player_current_anim.name != .RunDown {
             player_current_anim = player_run_down
-            up_down = true
+            player_up_down = true
         }
     } else {
         player_vel.y = 0
-        up_down = false
+        player_up_down = false
     }
 
     if rl.IsKeyDown(Player_Move_Left) {
         player_vel.x = -player_run_speed
         player_flip = true
         if player_current_anim.name != .RunRight {
-            if !up_down {
+            if !player_up_down {
                 player_current_anim = player_run_right
                 player_facing = "left"
             }
@@ -90,7 +86,7 @@ player_movement :: proc() {
         player_vel.x = player_run_speed
         player_flip = false
         if player_current_anim.name != .RunRight {
-            if !up_down {
+            if !player_up_down {
                 player_current_anim = player_run_right
                 player_facing = "right"
             }

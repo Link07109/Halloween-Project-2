@@ -105,8 +105,10 @@ link_death :: proc() {
     timer_start(&timer_link_scream, 1)
 }
 
-game_over :: proc() {
+game_over :: proc(current_music: rl.Music) {
+	paused = true
     has_died = true
+	rl.StopMusicStream(current_music)
 }
 
 game_win :: proc() {

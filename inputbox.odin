@@ -49,7 +49,7 @@ inputbox_show :: proc(message_to_show: cstring, max_chars: int) {
     free_all(context.allocator)
 }
 
-inputbox_process :: proc(door: ^Door, correct_answer: cstring) {
+inputbox_process :: proc(door: ^Door, correct_answer: cstring, current_music: rl.Music) {
     has_made_nopers = false
     delete(nopers)
     if input == correct_answer {
@@ -71,7 +71,7 @@ inputbox_process :: proc(door: ^Door, correct_answer: cstring) {
             link_death()
             reason_death = "Better luck next time"
         }
-        game_over()
+        game_over(current_music)
     }
     input = ""
 }
