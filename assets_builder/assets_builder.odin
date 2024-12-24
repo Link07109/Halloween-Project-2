@@ -78,7 +78,7 @@ main :: proc() {
                 append(&texture_paths, fmt.tprintf("Resources/%s", fi.name))
             } else if strings.has_suffix(fi.name, ".ldtk") {
                 append(&level_paths, fmt.tprintf("Resources/%s", fi.name))
-			}
+            }
         }
     }
 
@@ -110,7 +110,7 @@ main :: proc() {
                 append(&font_paths, fmt.tprintf("Resources/Fonts/%s", fi.name))
             //} else if strings.has_suffix(fi.name, ".otf") {
                 //append(&font_paths, fmt.tprintf("Resouces/Fonts/%s", fi.name))
-			}
+            }
         }
     }
 
