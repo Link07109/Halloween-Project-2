@@ -142,7 +142,7 @@ load_rooms :: proc() {
 }
 
 load_world :: proc(candidate_room: ^Room, rooms_map: map[string]^Room) {
-    if project, ok := ldtk.load_from_file("Resources/new world links awakening.ldtk", context.temp_allocator).?; ok {
+    if project, ok := load_level_data(.NewWorldLinksAwakening).?; ok {
         fmt.println("---- Successfully loaded ldtk json!!!")
 
         candidate_room := candidate_room

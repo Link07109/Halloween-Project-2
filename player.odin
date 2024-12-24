@@ -40,9 +40,9 @@ player_run_down := Animation {
 }
 
 player_load_animation_textures :: proc() {
-    player_run_right.texture = rl.LoadTexture("Resources/linkawake_right.png")
-    player_run_up.texture = rl.LoadTexture("Resources/linkawake_up.png")
-    player_run_down.texture = rl.LoadTexture("Resources/linkawake_down.png")
+    player_run_right.texture = load_texture(.LinkawakeRight)
+    player_run_up.texture = load_texture(.LinkawakeUp)
+    player_run_down.texture = load_texture(.LinkawakeDown)
     player_current_anim = player_run_down
 }
 

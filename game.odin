@@ -46,26 +46,23 @@ main :: proc() {
     // -------------------------------------------------------------------------------------------------
     rl.InitWindow(i32(screen_width), i32(screen_height), title)
     rl.SetWindowMinSize(game_screen_width, game_screen_height)
-    rl.SetWindowState({ .WINDOW_MAXIMIZED, .VSYNC_HINT, .WINDOW_ALWAYS_RUN, .WINDOW_HIGHDPI })
-    rl.SetWindowIcon(rl.LoadImage("Resources/tokenPixel.png"))
+    rl.SetWindowState({ .WINDOW_MAXIMIZED, .VSYNC_HINT, .WINDOW_ALWAYS_RUN })
+    rl.SetWindowIcon(token_pixel)
     rl.SetExitKey(.GRAVE)
     rl.SetTargetFPS(60)
     rl.HideCursor()
 
+    rl.InitAudioDevice()
+    rl.SetMasterVolume(0.25)
+
     target := rl.LoadRenderTexture(game_screen_width, game_screen_height)
     rl.SetTextureFilter(target.texture, .POINT)
 
-    shader := rl.LoadShader("scan.vert", "scan.frag")
-
-    tileset := rl.LoadTexture("Resources/worldtiles.png")
-    outside_texture := rl.LoadTexture("Resources/outside.png")
-    game_map_texture := rl.LoadTexture("Resources/map_fullscreen.png")
-    player_load_animation_textures()
-
-    rl.InitAudioDevice()
-    rl.SetMasterVolume(0.25)
     load_audio()
     load_fonts()
+    load_textures()
+    shader := load_shader(.Scan)
+
     load_rooms()
     rooms_map := map[string]^Room {
         "Main_Hall" = &room_main_hall,
@@ -141,14 +138,14 @@ main :: proc() {
                     }
             }
 
-			timer_update(&timer_soundfx)
-			if timer_done(&timer_soundfx) {
-				link_death()
-			}
-			timer_update(&timer_link_scream)
-			if timer_done(&timer_link_scream) {
-				current_room = &room_game_over
-			}
+            timer_update(&timer_soundfx)
+            if timer_done(&timer_soundfx) {
+                link_death()
+            }
+            timer_update(&timer_link_scream)
+            if timer_done(&timer_link_scream) {
+                current_room = &room_game_over
+            }
 
             // actually playing the game!
             if !paused {
@@ -164,11 +161,11 @@ main :: proc() {
 
                 player_movement()
                 player_update_sanity()
-				if player_sanity <= 0 {
-					reason_death = "you committed suicide"
-					link_death()
-					game_over(current_music)
-				}
+                if player_sanity <= 0 {
+                    reason_death = "you committed suicide"
+                    link_death()
+                    game_over(current_music)
+                }
 
                 //if current_room.name == "Basement" {
                     // TODO: make this only happen upon entering the room
@@ -180,9 +177,9 @@ main :: proc() {
                         break
                     }
                     if player_collided_with(spike.coll) {
-						reason_death = "You got shredded by spikes."
-						link_death()
-						game_over(current_music)
+                        reason_death = "You got shredded by spikes."
+                        link_death()
+                        game_over(current_music)
                     }
 
                     // move spike
@@ -259,7 +256,7 @@ main :: proc() {
                                 }
                                 continue
                             case "Pot":
-                                dialogue_set_message("* Just a normal pot.\nNothing to see here")
+                                dialogue_set_message("* Just a normal pot.\nNothing to see here.")
                                 continue
                             case "Statue":
                                 if !rl.IsSoundPlaying(sound_dimensional) {
@@ -271,11 +268,11 @@ main :: proc() {
                                 // this used to kill u, idk if it still does
                                 continue
                             case "Mirror":
-								dialogue_set_message("* You look into the mirror,\nbut don't see your reflection...")
-								rl.PlaySound(sound_witch_laugh)
-								timer_start(&timer_soundfx, 2)
-								reason_death = "You shouldn't have done that"
-								game_over(current_music)
+                                dialogue_set_message("* You look into the mirror,\nbut don't see your reflection...")
+                                rl.PlaySound(sound_witch_laugh)
+                                timer_start(&timer_soundfx, 2)
+                                reason_death = "You shouldn't have done that"
+                                game_over(current_music)
                                 continue
                             case "Letter":
                                 letter_count += 1
@@ -316,7 +313,7 @@ main :: proc() {
         // -------------------------------------------------------------------------------------------------
         // DRAWING PHASE
         // -------------------------------------------------------------------------------------------------
-        draw_phase(scale, target, shader, tileset, outside_texture, game_map_texture)
+        draw_phase(scale, target, shader, tileset, outside_texture, map_texture)
 
         free_all(context.temp_allocator)
     }

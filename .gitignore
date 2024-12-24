@@ -1,6 +1,8 @@
 *.exe
 *.pdb
 *.aseprite
+.editorconfig
+package_game.bat
 Halloween-Project-2
 Resources/new world links awakening
 Resources/Reference

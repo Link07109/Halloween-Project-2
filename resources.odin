@@ -2,8 +2,22 @@ package game
 
 import rl "vendor:raylib"
 import "core:fmt"
+import "core:strings"
 import "core:encoding/json"
 import "ldtk"
+
+token_pixel := load_image(.TokenPixel)
+
+tileset,
+outside_texture,
+map_texture: rl.Texture
+
+load_textures :: proc() {
+    tileset = load_texture(.Worldtiles)
+    outside_texture = load_texture(.Outside)
+    map_texture = load_texture(.MapFullscreen)
+    player_load_animation_textures()
+}
 
 default_font,
 big_font,
@@ -14,14 +28,17 @@ font_determination: rl.Font
 default_font_size,
 big_font_size: f32
 
+font_key_color := rl.Color { 255, 0, 255, 255 }
+
 load_fonts :: proc() {
-    font_linkawake = rl.LoadFont("Resources/Fonts/linkawake_font.png")
-    font_alagard = rl.LoadFont("Resources/Fonts/alagard.png")
+    font_linkawake = load_font(.LinkawakeFont)
+    font_alagard = load_font(.Alagard)
+
     font_determination = rl.LoadFont("Resources/Fonts/DTM-Sans.otf")
 
     default_font = font_linkawake
     default_font_size = 8
-    big_font = font_determination
+    big_font = font_alagard
     big_font_size = 32
 }
 
@@ -55,34 +72,35 @@ sound_correct,
 sound_beware: rl.Sound
 
 load_audio :: proc() {
-    // music_zant = rl.LoadMusicStream("Resources/Audio/zant.wav")
-    // music_snowpeak = rl.LoadMusicStream("Resources/Audio/snowpeak.wav")
-    // music_mini_boss = rl.LoadMusicStream("Resources/Audio/miniBoss.wav")
-    // music_guardian = rl.LoadMusicStream("Resources/Audio/guardian.wav")
-    //music_balcony = rl.LoadMusicStream("Resources/balcony.wav"),
-    music_rain = rl.LoadMusicStream("Resources/Audio/Rain-Theme-Zenonia.wav")
-    music_deep_inside = rl.LoadMusicStream("Resources/Audio/deep inside.wav")
-    music_twilight = rl.LoadMusicStream("Resources/Audio/twilight.wav")
-    music_dark_memories = rl.LoadMusicStream("Resources/Audio/darkMemories.wav")
-    music_to_the_moon = rl.LoadMusicStream("Resources/Audio/to the moon.wav")
-    music_lavender = rl.LoadMusicStream("Resources/Audio/lavender.wav")
-    music_zenonia = rl.LoadMusicStream("Resources/Audio/zenonia-2-OST-Intro.wav")
+    // music_zant = load_music(.Zant)
+    // music_snowpeak = load_music(.Snowpeak)
+    // music_mini_boss = load_music(.MiniBoss)
+    // music_guardian = load_music(.Guardian)
+    // music_balcony = load_music(.Balcony)
+    // music_to_the_moon = load_music(.ToTheMoon)
 
-    // sound_typing = rl.LoadSound("Resources/Audio/typing.wav")
-    // sound_twilit_intro = rl.LoadSound("Resources/Audio/twilit intro.wav")
-    // sound_oot_game_over = rl.LoadSound("Resources/Audio/ootGameOver.wav")
-    sound_witch_laugh = rl.LoadSound("Resources/Audio/witchlaugh.wav")
-    sound_tp_game_over = rl.LoadSound("Resources/Audio/tpGameOver.wav")
-    sound_teleport = rl.LoadSound("Resources/Audio/teleport.wav")
-    sound_spirit_gem_get = rl.LoadSound("Resources/Audio/Spirit-Gem-Get.wav")
-    sound_run_roar = rl.LoadSound("Resources/Audio/runRAWR.wav")
-    sound_link_scream1 = rl.LoadSound("Resources/Audio/linkscream1.wav")
-    sound_link_scream2 = rl.LoadSound("Resources/Audio/linkscream2.wav")
-    sound_gold_token = rl.LoadSound("Resources/Audio/goldToken.wav")
-    sound_flowey = rl.LoadSound("Resources/Audio/flowey.wav")
-    sound_dimensional = rl.LoadSound("Resources/Audio/dimensional.wav")
-    sound_correct = rl.LoadSound("Resources/Audio/correctsound.wav")
-    sound_beware = rl.LoadSound("Resources/Audio/BewareILive.wav")
+    music_rain = load_music(.RainThemeZenonia)
+    music_deep_inside = load_music(.DeepInside)
+    music_twilight = load_music(.Twilight)
+    music_dark_memories = load_music(.DarkMemories)
+    music_lavender = load_music(.Lavender)
+    music_zenonia = load_music(.Zenonia2OstIntro)
+
+    // sound_typing = load_sound(.Typing)
+    // sound_twilit_intro = load_sound(.TwilitIntro)
+    // sound_oot_game_over = load_sound(.OotGameOver)
+    // sound_link_scream1 = load_sound(.Linkscream1)
+    sound_witch_laugh = load_sound(.Witchlaugh)
+    sound_tp_game_over = load_sound(.TpGameOver)
+    sound_teleport = load_sound(.Teleport)
+    sound_spirit_gem_get = load_sound(.SpiritGemGet)
+    sound_run_roar = load_sound(.RunRawr)
+    sound_link_scream2 = load_sound(.Linkscream2)
+    sound_gold_token = load_sound(.GoldToken)
+    // sound_flowey = load_sound(.Flowey)
+    sound_dimensional = load_sound(.Dimensional)
+    sound_correct = load_sound(.Correctsound)
+    sound_beware = load_sound(.BewareIlive)
 }
 
 update_room_music :: proc(current_room: ^Room, current_music: ^rl.Music) {
@@ -106,9 +124,9 @@ link_death :: proc() {
 }
 
 game_over :: proc(current_music: rl.Music) {
-	paused = true
+    paused = true
     has_died = true
-	rl.StopMusicStream(current_music)
+    rl.StopMusicStream(current_music)
 }
 
 game_win :: proc() {
