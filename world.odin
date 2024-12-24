@@ -175,7 +175,6 @@ load_world :: proc(candidate_room: ^Room, rooms_map: map[string]^Room) {
                 }
             }
         }
-        free_all(context.allocator)
     } else {
         fmt.println("---- ERROR LOADING LDTK JSON!!!!")
     }
