@@ -98,8 +98,9 @@ main :: proc() {
             rl.ToggleFullscreen()
         }
 
-        if rl.IsKeyPressed(.R) {
-            rl.SetWindowSize(672, 432)
+        if rl.IsKeyPressed(Shader_Toggle) {
+            //rl.SetWindowSize(672, 432)
+            should_use_shader = !should_use_shader
         }
 
         if rl.WindowShouldClose() {

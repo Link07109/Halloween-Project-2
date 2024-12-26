@@ -143,6 +143,7 @@ key_count,
 candy_count: u8
 has_map: bool
 
+should_use_shader := true
 should_show_map,
 should_show_inventory,
 should_show_inputbox,

@@ -129,7 +129,9 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
     // draw render texture
     rl.BeginDrawing()
 
-    rl.BeginShaderMode(shader)
+    if should_use_shader {
+        rl.BeginShaderMode(shader)
+    }
     rl.DrawTexturePro(
         target.texture,
         { 0, 0, f32(target.texture.width), -1 * f32(target.texture.height) },
@@ -138,7 +140,9 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
         0,
         rl.WHITE
     )
-    rl.EndShaderMode()
+    if should_use_shader {
+        rl.EndShaderMode()
+    }
 
     rl.EndDrawing()
 }

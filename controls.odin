@@ -9,6 +9,7 @@ Player_Move_Down :: rl.KeyboardKey.S
 Player_Jump :: rl.KeyboardKey.SPACE
 
 Interact :: rl.KeyboardKey.E
+Shader_Toggle :: rl.KeyboardKey.R
 
 Inventory_Toggle :: rl.KeyboardKey.I
 Map_Toggle :: rl.KeyboardKey.M
