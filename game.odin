@@ -142,6 +142,7 @@ main :: proc() {
                     }
             }
 
+            transition_loop()
             timer_update(&timer_soundfx)
             if timer_done(&timer_soundfx) {
                 link_death()
@@ -230,8 +231,9 @@ main :: proc() {
                             }
                             break
                         }
-                        current_room = door.dest_room
-                        player_pos = door.dest_player_pos
+                        //current_room = door.dest_room
+                        //player_pos = door.dest_player_pos
+                        room_transition_start(door.dest_room, door.dest_player_pos)
                         break
                     } else if !player_collided_with(door.coll) && door.collided_with {
                         door.collided_with = false

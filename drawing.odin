@@ -5,6 +5,56 @@ import "core:fmt"
 import "core:strings"
 
 ui_text_color := rl.BLACK
+transition_color := rl.Color { 0, 0, 0, 0 }
+
+room_transition_timer1: Timer
+room_transition_timer2: Timer
+transition_duration := f32(0.5)
+next_room: ^Room
+next_player_pos: rl.Vector2
+
+transition_loop :: proc() {
+    timer_update(&room_transition_timer1)
+    timer_update(&room_transition_timer2)
+
+    if room_transition_timer1.started {
+        transition_color.a += u8(rl.GetFrameTime() * 255 / transition_duration)
+        if transition_color.a > 255 {
+            transition_color.a = 255
+        }
+    }
+
+    if room_transition_timer2.started {
+        transition_color.a -= u8(rl.GetFrameTime() * 255 / transition_duration)
+        if transition_color.a < 0 {
+            transition_color.a = 0
+        }
+    }
+
+    // go to next room
+    if timer_done(&room_transition_timer1) {
+        current_room = next_room
+        player_pos = next_player_pos
+        room_transition_end()
+    }
+
+    if timer_done(&room_transition_timer2) {
+        paused = false
+    }
+}
+
+// called on door collision
+room_transition_start :: proc(room: ^Room, pos: rl.Vector2) {
+    next_room = room
+    next_player_pos = pos
+    timer_start(&room_transition_timer1, transition_duration)
+    paused = true
+}
+
+// called on room switch
+room_transition_end :: proc() {
+    timer_start(&room_transition_timer2, transition_duration)
+}
 
 draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tileset, outside_texture, game_map_texture: rl.Texture) {
     // put everything in render texture so we can scale it easily
@@ -116,6 +166,10 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
             current_room_name_space, was_allocated := strings.replace(current_room.name, "_", " ", 1, context.temp_allocator)
             rl.DrawText(fmt.ctprintf("%v", current_room_name_space), 80, 16, 4, { 177, 62, 83, 255 })
         }
+    }
+
+    if room_transition_timer1.started || room_transition_timer2.started {
+        rl.DrawRectangleRec({ 0, 0, 224, 144 }, transition_color)
     }
 
     if should_close_window {
