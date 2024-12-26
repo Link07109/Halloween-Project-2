@@ -173,8 +173,8 @@ player_draw_debug :: proc() {
 
 player_draw_sanity :: proc() {
     ui_y := i32(128)
-    rl.DrawTextEx(big_font, "Sanity", { 130, f32(ui_y) }, 16, 0, text_color)
+    rl.DrawTextEx(big_font, "Sanity", { 130, f32(ui_y) }, 16, big_font_spacing, ui_text_color)
     rl.DrawRectangle(180, ui_y+4, 40, 8, rl.BLACK)
     rl.DrawRectangle(180, ui_y+4, (player_sanity/15)*2, 8, rl.MAROON)
-    rl.DrawRectangleLines(179, ui_y+3, 42, 10, text_color)
+    rl.DrawRectangleLines(180, ui_y+3, 41, 9, ui_text_color)
 }

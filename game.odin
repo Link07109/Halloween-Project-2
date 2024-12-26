@@ -115,7 +115,9 @@ main :: proc() {
                 should_close_window = false
             }
         } else {
-            update_room_music(current_room, &current_music)
+            if !has_died {
+                update_room_music(current_room, &current_music)
+            }
 
             switch current_room.name {
                 case "Title_Screen":
@@ -126,6 +128,7 @@ main :: proc() {
                     }
                 case "Game_Over_Screen":
                     paused = true
+                    has_died = false
                     if rl.IsKeyPressed(.ENTER) {
                         reset_data(rooms_map)
                         current_room = &room_title_screen

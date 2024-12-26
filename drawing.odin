@@ -2,6 +2,9 @@ package game
 
 import rl "vendor:raylib"
 import "core:fmt"
+import "core:strings"
+
+ui_text_color := rl.BLACK
 
 draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tileset, outside_texture, game_map_texture: rl.Texture) {
     // put everything in render texture so we can scale it easily
@@ -9,8 +12,8 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
 
     // game
     if current_room.name != "Title_Screen" && current_room.name != "Game_Over_Screen" && current_room.name != "Win_Screen" {
-        //rl.ClearBackground({ 248, 248, 136, 255 })
-        rl.ClearBackground({ 11, 10, 22, 255 })
+        rl.ClearBackground({ 255, 189, 140, 255 })
+        // rl.ClearBackground({ 11, 10, 22, 255 })
 
         if !should_show_map {
             draw_tiles_ldtk(tileset, current_room.tile_data)
@@ -41,33 +44,33 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
     if current_room.name == "Title_Screen" {
         rl.ClearBackground(rl.Color { 128, 0, 128, 255})
         rl.DrawTextEx(font_linkawake, "Halloween Project", { 20, 32 }, 16, 1, rl.Color { 127, 255, 212, 255 })
-        rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, 0, rl.WHITE)
-        rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, 0)[0]), 80 }, 16, 0, rl.RED)
-        rl.DrawTextEx(big_font, "to start", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, 0)[0]), 80 }, 16, 0, rl.WHITE)
-        rl.DrawTextEx(font_alagard, "Ivan Valadez", { 80, 128 }, 16, 0, rl.WHITE)
+        rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, big_font_spacing, rl.WHITE)
+        rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.RED)
+        rl.DrawTextEx(big_font, "to start", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.WHITE)
+        rl.DrawTextEx(font_alagard, "Ivan Valadez", { 80, 128 }, 16, big_font_spacing, rl.WHITE)
     } else if current_room.name == "Game_Over_Screen" {
         rl.ClearBackground(rl.BLACK)
-        rl.DrawTextEx(big_font, "YOU DIED", { 65, 32 }, big_font_size, 0, rl.WHITE)
-        rl.DrawTextEx(default_font, reason_death, { 60, 64 }, default_font_size, 1, rl.WHITE)
-        rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, 0, rl.WHITE)
-        rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, 0)[0]), 80 }, 16, 0, rl.RED)
-        rl.DrawTextEx(big_font, "to retry", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, 0)[0]), 80 }, 16, 0, rl.WHITE)
+        rl.DrawTextEx(big_font, "YOU DIED", { 65, 32 }, big_font_size, big_font_spacing, rl.WHITE)
+        rl.DrawTextEx(default_font, reason_death, { 60, 64 }, default_font_size, big_font_spacing, rl.WHITE)
+        rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, big_font_spacing, rl.WHITE)
+        rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.RED)
+        rl.DrawTextEx(big_font, "to retry", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.WHITE)
     } else if current_room.name == "Win_Screen" {
         rl.ClearBackground(rl.DARKGREEN)
-        rl.DrawTextEx(big_font, "You Won!", { 65, 32 }, big_font_size, 0, rl.WHITE)
-        rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, 0, rl.WHITE)
-        rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, 0)[0]), 80 }, 16, 0, rl.RED)
-        rl.DrawTextEx(big_font, "to restart!", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, 0)[0]), 80 }, 16, 0, rl.WHITE)
+        rl.DrawTextEx(big_font, "You Won!", { 65, 32 }, big_font_size, big_font_spacing, rl.WHITE)
+        rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, big_font_spacing, rl.WHITE)
+        rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.RED)
+        rl.DrawTextEx(big_font, "to restart!", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.WHITE)
     } else {
         ui_y := i32(128)
         // key
         key_src := rl.Rectangle { 160, 80, 16, 16 }
-        rl.DrawTexturePro(tileset, key_src, { 4, f32(ui_y) - 1, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
-        rl.DrawText(fmt.ctprintf("%v", key_count), 20, ui_y + 4, 3, rl.WHITE)
+        rl.DrawTexturePro(tileset, key_src, { 4, f32(ui_y), 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+        rl.DrawTextEx(big_font, fmt.ctprintf("%v", key_count), { 20, f32(ui_y) + 1 }, 16, big_font_spacing, ui_text_color)
         // candy
         candy_src := rl.Rectangle { 160, 64, 16, 16 }
         rl.DrawTexturePro(tileset, candy_src, { 50-7, f32(ui_y), 16, 16 }, { 0, 0 }, 0, rl.WHITE)
-        rl.DrawText(fmt.ctprintf("%v", candy_count), 60, ui_y + 4, 3, rl.WHITE)
+        rl.DrawTextEx(big_font, fmt.ctprintf("%v", candy_count), { 60, f32(ui_y) + 1 }, 16, big_font_spacing, ui_text_color)
 
         player_draw_sanity()
 
@@ -106,10 +109,12 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
             rl.DrawText("Inventory", 80, 16, 4, rl.WHITE)
         }
         if should_show_map {
+            rl.ClearBackground({ 78, 25, 19, 255 })
             poe_soul_src := rl.Rectangle { 112, 96, 16, 16 }
             rl.DrawTexture(game_map_texture, 0, 0, rl.WHITE)
             rl.DrawTexturePro(tileset, poe_soul_src, { current_room.map_pos.x, current_room.map_pos.y, 16, 16 }, 0, 0, rl.WHITE)
-            rl.DrawText(fmt.ctprintf("%v", current_room.name), 80, 16, 4, rl.WHITE)
+            current_room_name_space, was_allocated := strings.replace(current_room.name, "_", " ", 1, context.temp_allocator)
+            rl.DrawText(fmt.ctprintf("%v", current_room_name_space), 80, 16, 4, { 177, 62, 83, 255 })
         }
     }
 

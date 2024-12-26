@@ -136,7 +136,7 @@ load_rooms :: proc() {
     }
     room_balcony = Room {
         name = "Balcony",
-        music = music_rain,
+        music = music_wind,
         map_pos = { 122, 30 }
     }
 }

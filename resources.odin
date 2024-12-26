@@ -26,7 +26,8 @@ font_alagard,
 font_determination: rl.Font
 
 default_font_size,
-big_font_size: f32
+big_font_size,
+big_font_spacing: f32
 
 font_key_color := rl.Color { 255, 0, 255, 255 }
 
@@ -40,6 +41,7 @@ load_fonts :: proc() {
     default_font_size = 8
     big_font = font_alagard
     big_font_size = 32
+    big_font_spacing = 1
 }
 
 //music_zant,
@@ -47,6 +49,7 @@ load_fonts :: proc() {
 //music_mini_boss,
 //music_guardian,
 //music_balcony,
+music_wind,
 music_rain,
 music_deep_inside,
 music_twilight,
@@ -79,6 +82,7 @@ load_audio :: proc() {
     // music_balcony = load_music(.Balcony)
     // music_to_the_moon = load_music(.ToTheMoon)
 
+    music_wind = load_music(.Wind)
     music_rain = load_music(.RainThemeZenonia)
     music_deep_inside = load_music(.DeepInside)
     music_twilight = load_music(.Twilight)
