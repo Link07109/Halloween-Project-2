@@ -57,13 +57,13 @@ player_update_sanity :: proc() {
 
 player_movement :: proc() {
     if rl.IsKeyDown(Player_Move_Up) {
-        player_vel.y = -player_run_speed
+        player_vel.y = -1
         if player_current_anim.name != .RunUp {
             player_current_anim = player_run_up
             player_up_down = true
         }
     } else if rl.IsKeyDown(Player_Move_Down) {
-        player_vel.y = player_run_speed
+        player_vel.y = 1
         if player_current_anim.name != .RunDown {
             player_current_anim = player_run_down
             player_up_down = true
@@ -74,7 +74,7 @@ player_movement :: proc() {
     }
 
     if rl.IsKeyDown(Player_Move_Left) {
-        player_vel.x = -player_run_speed
+        player_vel.x = -1
         player_flip = true
         if player_current_anim.name != .RunRight {
             if !player_up_down {
@@ -83,7 +83,7 @@ player_movement :: proc() {
             }
         }
     } else if rl.IsKeyDown(Player_Move_Right) {
-        player_vel.x = player_run_speed
+        player_vel.x = 1
         player_flip = false
         if player_current_anim.name != .RunRight {
             if !player_up_down {
@@ -101,7 +101,7 @@ player_movement :: proc() {
         player_stop_animating = false
     }
 
-    player_pos += player_vel * rl.GetFrameTime()
+    player_pos += player_vel*player_run_speed * rl.GetFrameTime()
 
     player_feet_collider.x = player_pos.x - 6
     player_feet_collider.y = player_pos.y - 9
@@ -169,6 +169,7 @@ player_draw :: proc() {
 
 player_draw_debug :: proc() {
     rl.DrawRectangleRec(player_feet_collider, { 0, 255, 0, 100 })
+    rl.DrawText(fmt.ctprintf("%v", player_vel*player_run_speed * rl.GetFrameTime()), 0, 0, 8, rl.WHITE)
 }
 
 player_draw_sanity :: proc() {
