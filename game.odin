@@ -61,7 +61,8 @@ main :: proc() {
     load_audio()
     load_fonts()
     load_textures()
-    shader := load_shader(.Scan)
+    //shader := load_shader(.Scan)
+    shader := rl.LoadShader(nil, "acerola.frag")
 
     load_rooms()
     rooms_map := map[string]^Room {

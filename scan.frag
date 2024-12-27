@@ -7,7 +7,7 @@ out vec4 finalColor;
 
 const vec2 size = vec2(1344, 864);  // render size
 const float samples = 10.0;         // pixels per axis; higher = bigger glow, worse performance
-const float quality = 2; 	        // lower = smaller glow, better quality
+const float quality = 2.0;          // lower = smaller glow, better quality
 
 uniform sampler2D texture0;
 uniform vec4 colDiffuse;
@@ -19,8 +19,8 @@ void main() {
     // blur !
     vec3 texelColor = texture(texture0, fragTexCoord).rgb*weight[0];
     for (int i = 1; i < 3; i++) {
-	    texelColor += texture(texture0, fragTexCoord + vec2(offset[i])/size.x, 0.0).rgb*weight[i];
-	    texelColor += texture(texture0, fragTexCoord - vec2(offset[i])/size.x, 0.0).rgb*weight[i];
+        texelColor += texture(texture0, fragTexCoord + vec2(offset[i])/size.x, 0.0).rgb*weight[i];
+        texelColor += texture(texture0, fragTexCoord - vec2(offset[i])/size.x, 0.0).rgb*weight[i];
     }
     finalColor = vec4(texelColor, 1.0);
 
@@ -28,7 +28,7 @@ void main() {
     //finalColor = texture(texture0, fragTexCoord) * fragColor; // (use this if we want to remove the blur)
     float y = floor(fragTexCoord.y * size.y);
     if (mod(y,4) == 3) {
-	    finalColor /= 1.25;
+        finalColor /= 1.25;
     }
 
     // bloom !
