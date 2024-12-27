@@ -9,12 +9,15 @@ transition_color := rl.Color { 0, 0, 0, 0 }
 
 room_transition_timer1: Timer
 room_transition_timer2: Timer
-transition_duration := f32(0.5)
+room_transition_timer_mid: Timer
+transition_duration_mid := f32(0.5)
+transition_duration := f32(0.133)
 next_room: ^Room
 next_player_pos: rl.Vector2
 
 transition_loop :: proc() {
     timer_update(&room_transition_timer1)
+    timer_update(&room_transition_timer_mid)
     timer_update(&room_transition_timer2)
 
     if room_transition_timer1.started {
@@ -35,6 +38,12 @@ transition_loop :: proc() {
     if timer_done(&room_transition_timer1) {
         current_room = next_room
         player_pos = next_player_pos
+        player_feet_collider.x = player_pos.x - 6
+        player_feet_collider.y = player_pos.y - 9
+        room_transition_mid()
+    }
+
+    if timer_done(&room_transition_timer_mid) {
         room_transition_end()
     }
 
@@ -47,11 +56,17 @@ transition_loop :: proc() {
 room_transition_start :: proc(room: ^Room, pos: rl.Vector2) {
     next_room = room
     next_player_pos = pos
-    timer_start(&room_transition_timer1, transition_duration)
     paused = true
+    timer_start(&room_transition_timer1, transition_duration)
 }
 
 // called on room switch
+room_transition_mid :: proc() {
+    transition_color.a = 255
+    timer_start(&room_transition_timer_mid, transition_duration_mid)
+}
+
+// called on fade timer end
 room_transition_end :: proc() {
     timer_start(&room_transition_timer2, transition_duration)
 }
@@ -66,6 +81,7 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
         // rl.ClearBackground({ 11, 10, 22, 255 })
 
         if !should_show_map {
+            ui_text_color = rl.BLACK
             draw_tiles_ldtk(tileset, current_room.tile_data)
             if current_room.name == "Balcony" {
                 rl.DrawTexture(outside_texture, 0, 0, rl.WHITE)
@@ -81,6 +97,8 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
             }
             player_edge_collision()
             handle_collisions(current_room)
+        } else {
+            ui_text_color = rl.WHITE
         }
 
         if !paused && !player_stop_animating {
@@ -164,11 +182,12 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
             rl.DrawTexture(game_map_texture, 0, 0, rl.WHITE)
             rl.DrawTexturePro(tileset, poe_soul_src, { current_room.map_pos.x, current_room.map_pos.y, 16, 16 }, 0, 0, rl.WHITE)
             current_room_name_space, was_allocated := strings.replace(current_room.name, "_", " ", 1, context.temp_allocator)
-            rl.DrawText(fmt.ctprintf("%v", current_room_name_space), 80, 16, 4, { 177, 62, 83, 255 })
+            diff := 124 - rl.MeasureTextEx(big_font, temp_cstring(current_room_name_space), 16, big_font_spacing).x
+            rl.DrawTextEx(big_font, temp_cstring(current_room_name_space), { 49 + (diff / 2), 12 }, 16, big_font_spacing, { 177, 62, 83, 255 })
         }
     }
 
-    if room_transition_timer1.started || room_transition_timer2.started {
+    if room_transition_timer1.started || room_transition_timer2.started || room_transition_timer_mid.started {
         rl.DrawRectangleRec({ 0, 0, 224, 144 }, transition_color)
     }
 

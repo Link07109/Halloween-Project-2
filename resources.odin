@@ -26,6 +26,7 @@ font_alagard,
 font_determination: rl.Font
 
 default_font_size,
+default_font_spacing,
 big_font_size,
 big_font_spacing: f32
 
@@ -39,6 +40,7 @@ load_fonts :: proc() {
 
     default_font = font_linkawake
     default_font_size = 8
+    default_font_spacing = 1
     big_font = font_alagard
     big_font_size = 32
     big_font_spacing = 1

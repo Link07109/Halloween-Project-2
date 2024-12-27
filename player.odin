@@ -169,7 +169,8 @@ player_draw :: proc() {
 
 player_draw_debug :: proc() {
     rl.DrawRectangleRec(player_feet_collider, { 0, 255, 0, 100 })
-    rl.DrawText(fmt.ctprintf("%v", player_vel*player_run_speed * rl.GetFrameTime()), 0, 0, 8, rl.WHITE)
+    //rl.DrawText(fmt.ctprintf("%v", player_vel*player_run_speed * rl.GetFrameTime()), 0, 0, 8, rl.WHITE)
+    rl.DrawText(fmt.ctprintf("%v", player_pos), 0, 0, 8, rl.WHITE)
 }
 
 player_draw_sanity :: proc() {

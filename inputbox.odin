@@ -4,9 +4,8 @@ import rl "vendor:raylib"
 import "core:fmt"
 import "core:unicode/utf8"
 
-maxValues := 1
-letterCount := 0
-textBox := rl.Rectangle { 20, 80, 184, 40 }
+max_values := u8(1)
+letterCount := u8(0)
 framesCounter := 0
 
 nopers: []rune
@@ -14,17 +13,31 @@ has_made_nopers: bool
 input: cstring
 message: cstring
 
-inputbox_show :: proc(message_to_show: cstring, max_chars: int) {
+backspace :: proc() {
+    letterCount -= 1
+    if letterCount < 0 {
+        letterCount = 0
+    } else if letterCount > max_values {
+        letterCount = max_values - 1
+    }
+    nopers[letterCount] = '_'
+}
+
+inputbox_show :: proc(message_to_show: cstring, max_chars: u8) {
     message = message_to_show
-    maxValues = max_chars
+    max_values = max_chars
     if !has_made_nopers {
         nopers = make([]rune, max_chars)
         has_made_nopers = true
+        letterCount = max_values
+        for i := u8(0); i < max_values; i += 1 {
+            backspace()
+        }
     }
 
     charr := rl.GetCharPressed()
     for charr > 0 {
-        if charr >= 48 && charr <= 57 && letterCount < maxValues {
+        if charr >= 48 && charr <= 57 && letterCount < max_values {
             nopers[letterCount] = charr
             letterCount += 1
         }
@@ -32,21 +45,12 @@ inputbox_show :: proc(message_to_show: cstring, max_chars: int) {
     }
 
     if rl.IsKeyPressed(.BACKSPACE) {
-        letterCount -= 1
-        if letterCount < 0 {
-            letterCount = 0
-        } else if letterCount > maxValues {
-            letterCount = maxValues - 1
-        }
-        nopers[letterCount] = '_'
+        backspace()
     }
     framesCounter += 1
 
-    nopers_string := utf8.runes_to_string(nopers[:])
-    input = fmt.ctprintf("%v", nopers_string)
-
-    delete(nopers_string)
-    free_all(context.allocator)
+    nopers_string := utf8.runes_to_string(nopers[:], context.temp_allocator)
+    input = temp_cstring(nopers_string)
 }
 
 inputbox_process :: proc(door: ^Door, correct_answer: cstring, current_music: rl.Music) {
@@ -80,13 +84,14 @@ inputbox_draw :: proc() {
     dialogue_draw_input(input, message)
 
     // blinking
-    if letterCount < maxValues {
-        if (framesCounter/20)%2 == 0 {
-            rl.DrawText("|", i32(textBox.x) + 4 + rl.MeasureText(input, 4), i32(textBox.y) + 4, 4, rl.WHITE)
-        }
-    } else {
-        if (framesCounter/20)%2 == 0 {
-            rl.DrawText("|", i32(textBox.x) + 4 + rl.MeasureText(input, 4), i32(textBox.y) + 4, 4, rl.RED)
+//   if letterCount < max_values {
+//       if (framesCounter / 20) % 2 == 0 {
+//           rl.DrawText("|", i32(text_box.x) + 4 + rl.MeasureText(input, 4), i32(text_box.y) + 4, 4, rl.WHITE)
+//       }
+//   } else {
+    if letterCount >= max_values {
+        if (framesCounter / 20) % 2 == 0 {
+            rl.DrawText("|", i32(text_box.x) + 74 + rl.MeasureText(input, 4), i32(text_box.y) + 16, 4, rl.RED)
         }
     }
 }
