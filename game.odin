@@ -56,13 +56,13 @@ main :: proc() {
     rl.SetMasterVolume(0.25)
 
     target := rl.LoadRenderTexture(game_screen_width, game_screen_height)
-    rl.SetTextureFilter(target.texture, .POINT)
+    rl.SetTextureFilter(target.texture, .ANISOTROPIC_16X)
+    rl.SetTextureWrap(target.texture, .CLAMP)
 
     load_audio()
     load_fonts()
     load_textures()
-    //shader := load_shader(.Scan)
-    shader := rl.LoadShader(nil, "acerola.frag")
+    shader := load_shader(.Acerola)
 
     load_rooms()
     rooms_map := map[string]^Room {

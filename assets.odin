@@ -1,5 +1,5 @@
 /**
-  * Modified version of Karl Zylinski's 
+  * Modified version of Karl Zylinski's
   * code from his game CAT & ONION
   */
 
@@ -34,7 +34,7 @@ FontName :: enum {
 }
 
 ShaderName :: enum {
-    Scan,
+    Acerola,
 }
 
 SoundName :: enum {
@@ -105,7 +105,7 @@ when EmbedAssets {
     }
 
     all_shaders := [ShaderName]Asset {
-        .Scan = { path = "scan.frag", path_hash = 348444704196689931, data = #load("scan.frag"), },
+        .Acerola = { path = "acerola.frag", path_hash = 17324121203074892642, data = #load("acerola.frag"), },
     }
 
     all_sounds := [SoundName]Asset {
@@ -171,7 +171,7 @@ when EmbedAssets {
     }
 
     all_shaders := [ShaderName]Asset {
-        .Scan = { path = "scan.frag", path_hash = 348444704196689931, },
+        .Acerola = { path = "acerola.frag", path_hash = 17324121203074892642, },
     }
 
     all_sounds := [SoundName]Asset {
