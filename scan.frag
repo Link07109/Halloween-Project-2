@@ -6,7 +6,7 @@ in vec4 fragColor;
 out vec4 finalColor;
 
 const vec2 size = vec2(1344, 864);  // render size
-const float samples = 10.0;          // pixels per axis; higher = bigger glow, worse performance
+const float samples = 10.0;         // pixels per axis; higher = bigger glow, worse performance
 const float quality = 2; 	        // lower = smaller glow, better quality
 
 uniform sampler2D texture0;

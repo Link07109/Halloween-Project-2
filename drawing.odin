@@ -7,6 +7,11 @@ import "core:strings"
 ui_text_color := rl.BLACK
 transition_color := rl.Color { 0, 0, 0, 0 }
 
+center_text_x :: proc(x_start: f32, width: f32, text: cstring, font := font_alagard, size := f32(16)) -> f32 {
+    diff := width - rl.MeasureTextEx(font, text, size, big_font_spacing).x
+    return x_start + (diff / 2)
+}
+
 room_transition_timer1: Timer
 room_transition_timer2: Timer
 room_transition_timer_mid: Timer
@@ -111,24 +116,40 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
     // gui
     if current_room.name == "Title_Screen" {
         rl.ClearBackground(rl.Color { 128, 0, 128, 255})
-        rl.DrawTextEx(font_linkawake, "Halloween Project", { 20, 32 }, 16, 1, rl.Color { 127, 255, 212, 255 })
-        rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, big_font_spacing, rl.WHITE)
-        rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.RED)
-        rl.DrawTextEx(big_font, "to start", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.WHITE)
-        rl.DrawTextEx(font_alagard, "Ivan Valadez", { 80, 128 }, 16, big_font_spacing, rl.WHITE)
+
+        title_center_x := center_text_x(0, 224, "Halloween Project", font_linkawake)
+        rl.DrawTextEx(font_linkawake, "Halloween Project", { title_center_x, 32 }, 16, 1, rl.Color { 127, 255, 212, 255 })
+
+        start_game_center_x := center_text_x(0, 224, "Press [ENTER] to start")
+        rl.DrawTextEx(big_font, "Press", { start_game_center_x, 80 }, 16, big_font_spacing, rl.WHITE)
+        rl.DrawTextEx(big_font, "[ENTER]", { f32(start_game_center_x + rl.MeasureTextEx(big_font, "Press ", 16, big_font_spacing).x), 80 }, 16, big_font_spacing, rl.RED)
+        rl.DrawTextEx(big_font, "to start", { f32(start_game_center_x + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, big_font_spacing).x), 80 }, 16, big_font_spacing, rl.WHITE)
+
+        ivan_center_x := center_text_x(0, 224, "Ivan Valadez")
+        rl.DrawTextEx(font_alagard, "Ivan Valadez", { ivan_center_x, 128 }, 16, big_font_spacing, rl.WHITE)
     } else if current_room.name == "Game_Over_Screen" {
         rl.ClearBackground(rl.BLACK)
-        rl.DrawTextEx(big_font, "YOU DIED", { 65, 32 }, big_font_size, big_font_spacing, rl.WHITE)
-        rl.DrawTextEx(default_font, reason_death, { 60, 64 }, default_font_size, big_font_spacing, rl.WHITE)
-        rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, big_font_spacing, rl.WHITE)
-        rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.RED)
-        rl.DrawTextEx(big_font, "to retry", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.WHITE)
+
+        you_died_center_x := center_text_x(0, 224, "YOU DIED", size=big_font_size)
+        rl.DrawTextEx(big_font, "YOU DIED", { you_died_center_x, 24 }, big_font_size, big_font_spacing, rl.WHITE)
+
+        reason_death_center_x := center_text_x(0, 224, reason_death, font_linkawake, size=default_font_size)
+        rl.DrawTextEx(default_font, reason_death, { reason_death_center_x, 64 }, default_font_size, big_font_spacing, rl.WHITE)
+
+        retry_game_center_x := center_text_x(0, 224, "Press [ENTER] to retry")
+        rl.DrawTextEx(big_font, "Press", { retry_game_center_x, 80 }, 16, big_font_spacing, rl.WHITE)
+        rl.DrawTextEx(big_font, "[ENTER]", { f32(retry_game_center_x + rl.MeasureTextEx(big_font, "Press ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.RED)
+        rl.DrawTextEx(big_font, "to retry", { f32(retry_game_center_x + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.WHITE)
     } else if current_room.name == "Win_Screen" {
         rl.ClearBackground(rl.DARKGREEN)
-        rl.DrawTextEx(big_font, "You Won!", { 65, 32 }, big_font_size, big_font_spacing, rl.WHITE)
-        rl.DrawTextEx(big_font, "Press", { 50, 80 }, 16, big_font_spacing, rl.WHITE)
-        rl.DrawTextEx(big_font, "[ENTER]", { f32(50 + rl.MeasureTextEx(big_font, "Press ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.RED)
-        rl.DrawTextEx(big_font, "to restart!", { f32(50 + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.WHITE)
+
+        you_won_center_x := center_text_x(0, 224, "You Won!", size=big_font_size)
+        rl.DrawTextEx(big_font, "You Won!", { you_won_center_x, 32 }, big_font_size, big_font_spacing, rl.WHITE)
+
+        restart_game_center_x := center_text_x(0, 224, "Press [ENTER] to restart")
+        rl.DrawTextEx(big_font, "Press", { restart_game_center_x, 80 }, 16, big_font_spacing, rl.WHITE)
+        rl.DrawTextEx(big_font, "[ENTER]", { f32(restart_game_center_x + rl.MeasureTextEx(big_font, "Press ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.RED)
+        rl.DrawTextEx(big_font, "to restart!", { f32(restart_game_center_x + rl.MeasureTextEx(big_font, "Press [ENTER] ", 16, big_font_spacing)[0]), 80 }, 16, big_font_spacing, rl.WHITE)
     } else {
         ui_y := i32(128)
         // key
@@ -181,9 +202,11 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
             poe_soul_src := rl.Rectangle { 112, 96, 16, 16 }
             rl.DrawTexture(game_map_texture, 0, 0, rl.WHITE)
             rl.DrawTexturePro(tileset, poe_soul_src, { current_room.map_pos.x, current_room.map_pos.y, 16, 16 }, 0, 0, rl.WHITE)
+
             current_room_name_space, was_allocated := strings.replace(current_room.name, "_", " ", 1, context.temp_allocator)
-            diff := 124 - rl.MeasureTextEx(big_font, temp_cstring(current_room_name_space), 16, big_font_spacing).x
-            rl.DrawTextEx(big_font, temp_cstring(current_room_name_space), { 49 + (diff / 2), 12 }, 16, big_font_spacing, { 177, 62, 83, 255 })
+            room_name_cstring := temp_cstring(current_room_name_space)
+            center_x_pos := center_text_x(49, 124, room_name_cstring)
+            rl.DrawTextEx(big_font, room_name_cstring, { center_x_pos, 12 }, 16, big_font_spacing, { 177, 62, 83, 255 })
         }
     }
 

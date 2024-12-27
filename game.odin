@@ -99,7 +99,6 @@ main :: proc() {
         }
 
         if rl.IsKeyPressed(Shader_Toggle) {
-            //rl.SetWindowSize(672, 432)
             should_use_shader = !should_use_shader
         }
 
