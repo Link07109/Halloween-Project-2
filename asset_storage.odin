@@ -12,23 +12,14 @@ import "core:strings"
 import "core:os"
 import "core:fmt"
 import "core:slice"
+import core_hash "core:hash"
 
 _ :: fmt
-UID :: distinct u128
 
-TextureAsset :: struct {
-    id: UID,
-    tex: rl.Texture,
-    path: cstring,
-    path_hash: Hash,
-}
+Hash :: distinct u64
 
-new_uid :: proc() -> UID {
-    return UID(rand.uint128())
-}
-
-string_to_uid :: proc(s: string) -> UID {
-    return UID(transmute(u128)([2]u64 { u64(hash(s)), u64(hash("from_string")) }))
+hash :: proc(s: string) -> Hash {
+    return Hash(core_hash.murmur64a(transmute([]byte)(s)))
 }
 
 temp_cstring :: proc(s:string) -> cstring {
