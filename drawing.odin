@@ -203,7 +203,7 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
             rl.DrawTexture(game_map_texture, 0, 0, rl.WHITE)
             rl.DrawTexturePro(tileset, poe_soul_src, { current_room.map_pos.x, current_room.map_pos.y, 16, 16 }, 0, 0, rl.WHITE)
 
-            current_room_name_space, was_allocated := strings.replace(current_room.name, "_", " ", 1, context.temp_allocator)
+            current_room_name_space, _ := strings.replace(current_room.name, "_", " ", 1, context.temp_allocator)
             room_name_cstring := temp_cstring(current_room_name_space)
             center_x_pos := center_text_x(49, 124, room_name_cstring)
             rl.DrawTextEx(big_font, room_name_cstring, { center_x_pos, 12 }, 16, big_font_spacing, { 177, 62, 83, 255 })
@@ -234,7 +234,7 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
         { screen_width - f32(game_screen_width)*scale, screen_height - f32(game_screen_height)*scale, f32(game_screen_width)*scale, f32(game_screen_height)*scale },
         { 0, 0 },
         0,
-        rl.WHITE
+        rl.WHITE,
     )
     if should_use_shader {
         rl.EndShaderMode()

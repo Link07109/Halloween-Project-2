@@ -1,7 +1,6 @@
 package game
 
 import rl "vendor:raylib"
-import "core:fmt"
 import "core:unicode/utf8"
 
 max_values := u8(1)

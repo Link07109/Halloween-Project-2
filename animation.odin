@@ -5,7 +5,7 @@ import rl "vendor:raylib"
 Animation_Name :: enum {
     RunUp,
     RunDown,
-    RunRight
+    RunRight,
 }
 
 Animation :: struct {

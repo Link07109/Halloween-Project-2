@@ -31,7 +31,7 @@ Door :: struct {
 
 Spike :: struct {
     coll: rl.Rectangle,
-    up: bool
+    up: bool,
 }
 
 Room :: struct {
@@ -69,11 +69,11 @@ current_room: ^Room
 load_rooms :: proc() {
     room_title_screen = Room {
         name = "Title_Screen",
-        music = music_twilight
+        music = music_twilight,
     }
     room_game_over = Room {
         name = "Game_Over_Screen",
-        music = music_zenonia
+        music = music_zenonia,
     }
     room_win = Room {
         name = "Win_Screen",
@@ -82,62 +82,62 @@ load_rooms :: proc() {
     room_main_hall = Room {
         name = "Main_Hall",
         music = music_dark_memories,
-        map_pos = { 116, 84 }
+        map_pos = { 116, 84 },
     }
     room_left = Room {
         name = "Left_Room",
         music = music_dark_memories,
-        map_pos = { 82, 84 }
+        map_pos = { 82, 84 },
     }
     room_secret = Room {
         name = "Secret_Room",
         music = music_dark_memories,
-        map_pos = { 81, 103 }
+        map_pos = { 81, 103 },
     }
     room_storage_closet = Room {
         name = "Storage_Closet",
         music = music_dark_memories,
-        map_pos = { 84, 67 }
+        map_pos = { 84, 67 },
     }
     room_basement = Room {
         name = "Basement",
         music = music_deep_inside,
-        map_pos = { 154, 70 }
+        map_pos = { 154, 70 },
     }
     room_bedroom = Room {
         name = "Bedroom",
         music = music_dark_memories,
-        map_pos = { 154, 104 }
+        map_pos = { 154, 104 },
     }
     room_library = Room {
         name = "Library",
         music = music_dark_memories,
-        map_pos = { 154, 84 }
+        map_pos = { 154, 84 },
     }
     room_upper_chamber = Room {
         name = "Upper_Chamber",
         music = music_lavender,
-        map_pos = { 122, 48 }
+        map_pos = { 122, 48 },
     }
     room_bathroom = Room {
         name = "Bathroom",
         music = music_lavender,
-        map_pos = { 154, 48 }
+        map_pos = { 154, 48 },
     }
     room_upstairs_hallway = Room {
         name = "Upstairs_Hallway",
         music = music_lavender,
-        map_pos = { 90, 48 }
+        map_pos = { 90, 48 },
     }
     room_gallery = Room {
         name = "Gallery",
         music = music_lavender,
-        map_pos = { 60, 48 }
+        map_pos = { 60, 48 },
     }
     room_balcony = Room {
         name = "Balcony",
         music = music_wind,
-        map_pos = { 122, 30 }
+        map_pos = { 122, 30 },
     }
 }
 
@@ -160,18 +160,18 @@ load_world :: proc(candidate_room: ^Room, rooms_map: map[string]^Room) {
 
             for layer in level.layer_instances {
                 switch layer.type {
-                    case .IntGrid: // floor + walls, collisions
-                        candidate_room.tile_data = load_tile_layer_ldtk(layer.auto_layer_tiles)
+                case .IntGrid: // floor + walls, collisions
+                    candidate_room.tile_data = load_tile_layer_ldtk(layer.auto_layer_tiles)
 
-                        for val, idx in layer.int_grid_csv {
-                            candidate_room.collision_tiles[idx] = u8(val)
-                        }
-                    case .Entities: // items, interactables
-                        candidate_room.entity_tile_data = load_entity_layer_ldtk(candidate_room, rooms_map, layer, layer.entity_instances, &candidate_room.entity_tile_offset)
+                    for val, idx in layer.int_grid_csv {
+                        candidate_room.collision_tiles[idx] = u8(val)
+                    }
+                case .Entities: // items, interactables
+                    candidate_room.entity_tile_data = load_entity_layer_ldtk(candidate_room, rooms_map, layer, layer.entity_instances, &candidate_room.entity_tile_offset)
 
-                    case .Tiles: // custom tiles
-                        candidate_room.custom_tile_data = load_tile_layer_ldtk(layer.grid_tiles)
-                    case .AutoLayer:
+                case .Tiles: // custom tiles
+                    candidate_room.custom_tile_data = load_tile_layer_ldtk(layer.grid_tiles)
+                case .AutoLayer:
                 }
             }
         }
@@ -214,42 +214,42 @@ load_entity_layer_ldtk :: proc(room: ^Room, rooms_map: map[string]^Room, layer: 
             }
             locked_with := val.field_instances[0].value.(string) or_else ""
             switch locked_with {
-                case "Key":
-                    door.locked_with = "Key"
-                    door.src = { 64, 128, 32, 16 }
-                case "Code":
-                    door.locked_with = "Code"
-                    door.src = { 64, 160, 16, 16 }
-                case "Puzzle":
-                    door.locked_with = "Puzzle"
-                    door.src = { 160, 160, 16, 16 }
+            case "Key":
+                door.locked_with = "Key"
+                door.src = { 64, 128, 32, 16 }
+            case "Code":
+                door.locked_with = "Code"
+                door.src = { 64, 160, 16, 16 }
+            case "Puzzle":
+                door.locked_with = "Puzzle"
+                door.src = { 160, 160, 16, 16 }
             }
             room.doors[door_counter] = door
             door_counter += 1
         } else if val.identifier == "Item" {
              item_type := val.field_instances[0].value.(string) or_else "Item"
              switch item_type {
-                case "Candy":
-                    tiles[idx].identifier = "Candy" 
-                case "Key":
-                    tiles[idx].identifier = "Key" 
-                case "Letter":
-                    tiles[idx].identifier = "Letter" 
-                case "Map":
-                    tiles[idx].identifier = "Map" 
+             case "Candy":
+                 tiles[idx].identifier = "Candy" 
+             case "Key":
+                 tiles[idx].identifier = "Key" 
+             case "Letter":
+                 tiles[idx].identifier = "Letter" 
+             case "Map":
+                 tiles[idx].identifier = "Map" 
              }
         } else if val.identifier == "Interactable" {
              item_type := val.field_instances[0].value.(string) or_else "Interactable"
              switch item_type {
-                case "Sign":
-                    tiles[idx].identifier = "Sign" 
-                case "Pot":
-                    tiles[idx].identifier = "Pot" 
-                case "Mirror":
-                    tiles[idx].identifier = "Mirror" 
-                case "Statue":
-                    tiles[idx].identifier = "Statue" 
-            }
+             case "Sign":
+                 tiles[idx].identifier = "Sign" 
+             case "Pot":
+                 tiles[idx].identifier = "Pot" 
+             case "Mirror":
+                 tiles[idx].identifier = "Mirror" 
+             case "Statue":
+                 tiles[idx].identifier = "Statue" 
+             }
         } else if val.identifier == "Spike" {
             tiles[idx].identifier = "Spike"
             room.spikes[spike_counter] = Spike { coll = { f32(val.px.x), f32(val.px.y), f32(val.width), f32(val.height) } }

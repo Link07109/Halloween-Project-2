@@ -3,8 +3,6 @@ package game
 import rl "vendor:raylib"
 import "core:fmt"
 import "core:mem"
-import "core:encoding/json"
-import "core:os"
 import "core:strings"
 
 screen_width := f32(1344) //672
@@ -121,25 +119,25 @@ main :: proc() {
             }
 
             switch current_room.name {
-                case "Title_Screen":
-                    paused = true
-                    if rl.IsKeyPressed(.ENTER) {
-                        paused = false
-                        current_room = &room_main_hall
-                    }
-                case "Game_Over_Screen":
-                    paused = true
-                    has_died = false
-                    if rl.IsKeyPressed(.ENTER) {
-                        reset_data(rooms_map)
-                        current_room = &room_title_screen
-                    }
-                case "Win_Screen":
-                    paused = true
-                    if rl.IsKeyPressed(.ENTER) {
-                        reset_data(rooms_map)
-                        current_room = &room_title_screen
-                    }
+            case "Title_Screen":
+                paused = true
+                if rl.IsKeyPressed(.ENTER) {
+                    paused = false
+                    current_room = &room_main_hall
+                }
+            case "Game_Over_Screen":
+                paused = true
+                has_died = false
+                if rl.IsKeyPressed(.ENTER) {
+                    reset_data(rooms_map)
+                    current_room = &room_title_screen
+                }
+            case "Win_Screen":
+                paused = true
+                if rl.IsKeyPressed(.ENTER) {
+                    reset_data(rooms_map)
+                    current_room = &room_title_screen
+                }
             }
 
             transition_loop()
@@ -256,49 +254,49 @@ main :: proc() {
                     entity_coll := rl.Rectangle { entity.dst.x, entity.dst.y, f32(entity.width), f32(entity.height) }
                     if player_collided_with(entity_coll) {
                         switch entity.identifier {
-                            case "Sign":
-                                if !rl.IsSoundPlaying(sound_beware) {
-                                    rl.PlaySound(sound_beware)
-                                }
-                                continue
-                            case "Pot":
-                                dialogue_set_message("* Just a normal pot.\nNothing to see here.")
-                                continue
-                            case "Statue":
-                                if !rl.IsSoundPlaying(sound_dimensional) {
-                                    rl.PlaySound(sound_dimensional)
-                                }
-                                // yeet player into the sky
-                                // cool floaty player animation
-                                // cant move for like 2 seconds
-                                // this used to kill u, idk if it still does
-                                continue
-                            case "Mirror":
-                                dialogue_set_message("* You look into the mirror,\nbut don't see your reflection...")
-                                rl.PlaySound(sound_witch_laugh)
-                                timer_start(&timer_soundfx, 2)
-                                reason_death = "You shouldn't have done that"
-                                game_over(current_music)
-                                continue
-                            case "Letter":
-                                letter_count += 1
-                                switch letter_count {
-                                    case 1:
-                                        dialogue_set_message("1")
-                                    case 2:
-                                        dialogue_set_message("9")
-                                    case 3:
-                                        dialogue_set_message("0")
-                                }
-                            case "Key":
-                                key_count += 1
-                                dialogue_set_message("* You got a key!")
-                            case "Candy":
-                                candy_count += 1
-                                dialogue_set_message("* You got a piece of candy!")
-                            case "Map":
-                                has_map = true
-                                dialogue_set_message("* You got the map!\n* Access it with 'M'")
+                        case "Sign":
+                            if !rl.IsSoundPlaying(sound_beware) {
+                                rl.PlaySound(sound_beware)
+                            }
+                            continue
+                        case "Pot":
+                            dialogue_set_message("* Just a normal pot.\nNothing to see here.")
+                            continue
+                        case "Statue":
+                            if !rl.IsSoundPlaying(sound_dimensional) {
+                                rl.PlaySound(sound_dimensional)
+                            }
+                            // yeet player into the sky
+                            // cool floaty player animation
+                            // cant move for like 2 seconds
+                            // this used to kill u, idk if it still does
+                            continue
+                        case "Mirror":
+                            dialogue_set_message("* You look into the mirror,\nbut don't see your reflection...")
+                            rl.PlaySound(sound_witch_laugh)
+                            timer_start(&timer_soundfx, 2)
+                            reason_death = "You shouldn't have done that"
+                            game_over(current_music)
+                            continue
+                        case "Letter":
+                            letter_count += 1
+                            switch letter_count {
+                            case 1:
+                                dialogue_set_message("1")
+                            case 2:
+                                dialogue_set_message("9")
+                            case 3:
+                                dialogue_set_message("0")
+                            }
+                        case "Key":
+                            key_count += 1
+                            dialogue_set_message("* You got a key!")
+                        case "Candy":
+                            candy_count += 1
+                            dialogue_set_message("* You got a piece of candy!")
+                        case "Map":
+                            has_map = true
+                            dialogue_set_message("* You got the map!\n* Access it with 'M'")
                         }
                         // pick up item! (removes it from the array of tiles so it wont be checked again or drawn)
                         if !strings.has_prefix(entity.identifier, "\x00") {

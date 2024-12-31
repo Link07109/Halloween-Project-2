@@ -1,10 +1,6 @@
 package game
 
 import rl "vendor:raylib"
-import "core:fmt"
-import "core:strings"
-import "core:encoding/json"
-import "ldtk"
 
 token_pixel := load_image(.TokenPixel)
 

@@ -7,20 +7,7 @@ package game
 
 import rl "vendor:raylib"
 import "ldtk"
-import "core:math/rand"
 import "core:strings"
-import "core:os"
-import "core:fmt"
-import "core:slice"
-import core_hash "core:hash"
-
-_ :: fmt
-
-Hash :: distinct u64
-
-hash :: proc(s: string) -> Hash {
-    return Hash(core_hash.murmur64a(transmute([]byte)(s)))
-}
 
 temp_cstring :: proc(s:string) -> cstring {
     return strings.clone_to_cstring(s, context.temp_allocator)
@@ -66,61 +53,6 @@ load_level_data :: proc(l: LevelName) -> Maybe(ldtk.Project) {
     } else {
        return ldtk.load_from_file(level.path, context.temp_allocator)
     }
-}
-
-load_ttf_from_memory :: proc(file_data: []byte, font_size: int) -> rl.Font {
-    font := rl.Font {
-        baseSize = i32(font_size),
-        glyphCount = 95,
-    }
-
-    font.glyphs = rl.LoadFontData(&file_data[0], i32(len(file_data)), font.baseSize, {}, font.glyphCount, .DEFAULT)
-
-    if font.glyphs != nil {
-        font.glyphPadding = 4
-
-        atlas := rl.GenImageFontAtlas(font.glyphs, &font.recs, font.glyphCount, font.baseSize, font.glyphPadding, 0)
-        atlas_u8 := slice.from_ptr((^u8)(atlas.data), int(atlas.width*atlas.height*2))
-
-        for i in 0..<atlas.width*atlas.height {
-            a := atlas_u8[i*2 + 1]
-            v := atlas_u8[i*2]
-            atlas_u8[i*2] = u8(f32(v)*(f32(a)/255))
-        }
-
-        font.texture = rl.LoadTextureFromImage(atlas)
-        rl.SetTextureFilter(font.texture, .BILINEAR)
-
-        // Update glyphs[i].image to use alpha, required to be used on ImageDrawText()
-        for i in 0..<font.glyphCount {
-            rl.UnloadImage(font.glyphs[i].image)
-            font.glyphs[i].image = rl.ImageFromImage(atlas, font.recs[i])
-        }
-        //TRACELOG(LOG_INFO, "FONT: Data loaded successfully (%i pixel size | %i glyphs)", font.baseSize, font.glyphCount);
-
-        rl.UnloadImage(atlas)
-    } else {
-        font = rl.GetFontDefault()
-    }
-
-    return font
-}
-
-load_font_ttf :: proc(name: FontName, font_size: int = 0) -> rl.Font {
-    fa := all_fonts[name]
-    f: rl.Font
-
-    when EmbedAssets {
-        f = load_ttf_from_memory(fa.data, font_size)
-    } else {
-        if font_data, ok := os.read_entire_file(fa.path, context.temp_allocator); ok {
-            f = load_ttf_from_memory(font_data, font_size)
-        } else {
-            f = rl.GetFontDefault()
-        }
-    }
-
-    return f
 }
 
 load_font_image_from_mem :: proc(file_data: rawptr) -> rl.Font {

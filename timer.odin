@@ -5,7 +5,7 @@ import rl "vendor:raylib"
 Timer :: struct {
     // time in seconds
     lifetime: f32,
-    started: bool
+    started: bool,
 }
 
 timer_start :: proc (timer: ^Timer, lifetime: f32) {

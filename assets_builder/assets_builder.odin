@@ -9,7 +9,6 @@ import "core:fmt"
 import "core:os"
 import "core:strings"
 import "core:path/slashpath"
-import "core:hash"
 
 dir_path_to_file_infos :: proc(path: string) -> []os.File_Info {
     d, derr := os.open(path, os.O_RDONLY)
@@ -46,7 +45,6 @@ main :: proc() {
 
     fmt.fprintln(f, "Asset :: struct {")
     fmt.fprintln(f, "\tpath: string,")
-    fmt.fprintln(f, "\tpath_hash: Hash,")
     fmt.fprintln(f, "\tdata: []u8,")
     fmt.fprintln(f, "}")
     fmt.fprintln(f, "")
@@ -173,11 +171,11 @@ main :: proc() {
 
         if embed {
             for p in paths {
-                fmt.fprintf(f, "\t\t.%s = {{ path = \"%s\", path_hash = %v, data = #load(\"%s\"), }},\n", asset_name(p), p, hash.murmur64a(transmute([]byte)(p)), p)
+                fmt.fprintf(f, "\t\t.%s = {{ path = \"%s\", data = #load(\"%s\"), }},\n", asset_name(p), p, p)
             }
         } else {
             for p in paths {
-                fmt.fprintf(f, "\t\t.%s = {{ path = \"%s\", path_hash = %v, },\n", asset_name(p), p, hash.murmur64a(transmute([]byte)(p)))
+                fmt.fprintf(f, "\t\t.%s = {{ path = \"%s\", },\n", asset_name(p), p)
             }
         }
         fmt.fprintln(f, "\t}")
@@ -186,7 +184,7 @@ main :: proc() {
     fmt.fprintln(f, "when EmbedAssets {")
     emit_asset_list(f, "all_textures", "TextureName", texture_paths, true, true)
     fmt.fprintln(f, "")
-    emit_asset_list(f, "all_levels", "LevelName", level_paths, true, false)
+    emit_asset_list(f, "all_levels", "LevelName", level_paths, true, true)
     fmt.fprintln(f, "")
     emit_asset_list(f, "all_fonts", "FontName", font_paths, true, false)
     fmt.fprintln(f, "")
@@ -199,7 +197,7 @@ main :: proc() {
     fmt.fprintln(f, "} else {")
     emit_asset_list(f, "all_textures", "TextureName", texture_paths, false, true)
     fmt.fprintln(f, "")
-    emit_asset_list(f, "all_levels", "LevelName", level_paths, false, false)
+    emit_asset_list(f, "all_levels", "LevelName", level_paths, false, true)
     fmt.fprintln(f, "")
     emit_asset_list(f, "all_fonts", "FontName", font_paths, false, false)
     fmt.fprintln(f, "")
