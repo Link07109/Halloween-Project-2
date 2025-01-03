@@ -4,6 +4,22 @@ import rl "vendor:raylib"
 import "core:fmt"
 import "core:strings"
 
+game_over_timer: Timer
+game_over_timer_start :: proc(lifetime: f32) {
+    timer_start(&game_over_timer, lifetime)
+    rl.PlaySound(sound_tp_game_over)
+}
+game_over_timer_update :: proc(current_music: rl.Music) {
+    timer_update(&game_over_timer)
+    if !timer_done(&game_over_timer) {
+        //rl.PauseMusicStream(current_music)
+    } else {
+        has_died = false
+        //rl.ResumeMusicStream(current_music)
+    }
+}
+
+
 ui_text_color := rl.BLACK
 transition_color := rl.Color { 0, 0, 0, 0 }
 
@@ -85,14 +101,16 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
         rl.ClearBackground({ 255, 189, 140, 255 })
         // rl.ClearBackground({ 11, 10, 22, 255 })
 
-        if !should_show_map {
+        if !should_show_map && !should_show_inventory {
             ui_text_color = rl.BLACK
+
             draw_tiles_ldtk(tileset, current_room.tile_data)
             if current_room.name == "Balcony" {
                 rl.DrawTexture(outside_texture, 0, 0, rl.WHITE)
             }
             draw_tiles_ldtk(tileset, current_room.custom_tile_data)
             draw_entity_tiles_ldtk(tileset, current_room.entity_tile_offset, current_room.entity_tile_data)
+
             for door in current_room.doors {
                 rl.DrawTexturePro(tileset, door.src, door.coll, { 0, 0 }, 0, rl.WHITE)
             }
@@ -100,17 +118,17 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
             for spike in current_room.spikes {
                 rl.DrawTexturePro(tileset, spike_src, spike.coll, { 0, 0 }, 0, rl.WHITE)
             }
+
             player_edge_collision()
             handle_collisions(current_room)
+            if !paused && !player_stop_animating {
+                update_animation(&player_current_anim)
+            }
+            player_draw()
+            //player_draw_debug()
         } else {
             ui_text_color = rl.WHITE
         }
-
-        if !paused && !player_stop_animating {
-            update_animation(&player_current_anim)
-        }
-        player_draw()
-        //player_draw_debug()
     }
 
     // gui
@@ -170,6 +188,7 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
         }
 
         if should_show_inventory {
+            rl.ClearBackground(rl.DARKGRAY)
             // draw outline
             rl.DrawRectangleLines(98, 30, 20, 20+48, rl.WHITE)
 

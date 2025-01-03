@@ -77,8 +77,7 @@ main :: proc() {
         "Gallery" = &room_gallery,
         "Storage_Closet" = &room_storage_closet,
     }
-    candidate_room := &room_left
-    load_world(candidate_room, rooms_map)
+    load_world(rooms_map)
 
     current_room = &room_title_screen
     current_music := current_room.music
@@ -127,7 +126,7 @@ main :: proc() {
                 }
             case "Game_Over_Screen":
                 paused = true
-                has_died = false
+                game_over_timer_update(current_music)
                 if rl.IsKeyPressed(.ENTER) {
                     reset_data(rooms_map)
                     current_room = &room_title_screen
@@ -147,6 +146,7 @@ main :: proc() {
             }
             timer_update(&timer_link_scream)
             if timer_done(&timer_link_scream) {
+                game_over_timer_start(10)
                 current_room = &room_game_over
             }
 
@@ -154,9 +154,15 @@ main :: proc() {
             if !paused {
                 if rl.IsKeyPressed(Inventory_Toggle) {
                     should_show_inventory = !should_show_inventory
+                    if should_show_inventory {
+                        should_show_map = false
+                    }
                 }
                 if rl.IsKeyPressed(Map_Toggle) && has_map {
                     should_show_map = !should_show_map
+                    if should_show_map {
+                        should_show_inventory = false
+                    }
                 }
                 if rl.IsKeyPressed(Interact) {
                     should_show_dialogue = false

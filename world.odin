@@ -141,21 +141,44 @@ load_rooms :: proc() {
     }
 }
 
-load_world :: proc(candidate_room: ^Room, rooms_map: map[string]^Room) {
+room_from_uid :: proc(uid: int) -> ^Room {
+    switch uid {
+    case 424:
+        return &room_left
+    case 425:
+        return &room_storage_closet
+    case 426:
+        return &room_main_hall
+    case 428:
+        return &room_library
+    case 429:
+        return &room_secret
+    case 430:
+        return &room_bedroom
+    case 431:
+        return &room_upper_chamber
+    case 432:
+        return &room_upstairs_hallway
+    case 433:
+        return &room_balcony
+    case 434:
+        return &room_bathroom
+    case 435:
+        return &room_basement
+    case 470:
+        return &room_gallery
+    }
+
+    return &room_main_hall
+}
+
+load_world :: proc(rooms_map: map[string]^Room) {
     if project, ok := load_level_data(.NewWorldLinksAwakening).?; ok {
         fmt.println("---- Successfully loaded ldtk json!!!")
+        candidate_room: ^Room
 
-        candidate_room := candidate_room
         for level in project.levels {
-            level_name := level.identifier
-
-            if level_name not_in rooms_map {
-                continue
-            }
-            if level_name != candidate_room.name {
-                candidate_room = rooms_map[level_name]
-            }
-            //fmt.printf("---- Level Name: %v\n", level_name)
+            candidate_room = room_from_uid(level.uid)
             tile_size = project.default_grid_size
 
             for layer in level.layer_instances {

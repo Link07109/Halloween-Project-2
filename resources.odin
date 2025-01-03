@@ -171,7 +171,7 @@ reset_data :: proc(rooms_map: map[string]^Room) {
     hide_everything()
     clean_up(rooms_map)
     load_rooms()
-    load_world(current_room, rooms_map)
+    load_world(rooms_map)
     player_pos = { 112, 64 }
     player_sanity = 300
     key_count = 0
