@@ -156,19 +156,26 @@ main :: proc() {
                     should_show_inventory = !should_show_inventory
                     if should_show_inventory {
                         should_show_map = false
+                        player_can_move = false
                     }
                 }
                 if rl.IsKeyPressed(Map_Toggle) && has_map {
                     should_show_map = !should_show_map
                     if should_show_map {
                         should_show_inventory = false
+                        player_can_move = false
                     }
+                }
+                if !should_show_inventory && !should_show_map {
+                    player_can_move = true
                 }
                 if rl.IsKeyPressed(Interact) {
                     should_show_dialogue = false
                 }
 
-                player_movement()
+                if player_can_move {
+                    player_movement()
+                }
                 player_update_sanity()
                 if player_sanity <= 0 {
                     reason_death = "you committed suicide"

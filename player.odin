@@ -14,6 +14,7 @@ player_run_speed := f32(65)
 player_current_anim: Animation
 player_facing := "down"
 
+player_can_move := true
 player_stop_animating,
 player_up_down,
 player_flip: bool
