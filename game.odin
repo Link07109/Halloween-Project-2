@@ -93,7 +93,7 @@ main :: proc() {
         scale := min(screen_width/f32(game_screen_width), screen_height/f32(game_screen_height))
 
         if rl.IsKeyPressed(.F11) {
-            rl.ToggleFullscreen()
+            rl.ToggleBorderlessWindowed()
         }
 
         if rl.IsKeyPressed(Shader_Toggle) {

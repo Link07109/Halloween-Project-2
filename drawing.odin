@@ -248,10 +248,11 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
     if should_use_shader {
         rl.BeginShaderMode(shader)
     }
+    rl.ClearBackground(rl.BLACK)
     rl.DrawTexturePro(
         target.texture,
         { 0, 0, f32(target.texture.width), -1 * f32(target.texture.height) },
-        { screen_width - f32(game_screen_width)*scale, screen_height - f32(game_screen_height)*scale, f32(game_screen_width)*scale, f32(game_screen_height)*scale },
+        { (screen_width - f32(game_screen_width)*scale)*0.5, (screen_height - f32(game_screen_height)*scale)*0.5, f32(game_screen_width)*scale, f32(game_screen_height)*scale },
         { 0, 0 },
         0,
         rl.WHITE,
