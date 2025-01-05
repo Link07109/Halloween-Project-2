@@ -131,6 +131,9 @@ stop_other_sounds :: proc() {
     if (rl.IsSoundPlaying(sound_dimensional)) {
         rl.StopSound(sound_dimensional)
     }
+    if (rl.IsSoundPlaying(sound_beware)) {
+        rl.StopSound(sound_beware)
+    }
 }
 
 timer_soundfx: Timer
