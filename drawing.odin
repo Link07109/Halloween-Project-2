@@ -191,31 +191,32 @@ draw_phase :: proc(scale: f32, target: rl.RenderTexture, shader: rl.Shader, tile
         if should_show_inventory {
             rl.ClearBackground(rl.DARKGRAY)
             // draw outline
-            rl.DrawRectangleLines(98, 30, 20, 20+48, rl.WHITE)
+            rl.DrawRectangleLines(102, 30, 20, 20+48, rl.WHITE)
 
             // draw collected letters
             letter_src := rl.Rectangle { 144, 64, 16, 16 }
             switch letter_count {
             case 3:
-                rl.DrawTexturePro(tileset, letter_src, { 100, 32+32, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
-                rl.DrawText("0", 120, 32+36, 3, rl.WHITE)
+                rl.DrawTexturePro(tileset, letter_src, { 104, 32+32, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                rl.DrawTextEx(big_font, "0", { 124, 32+32 }, 16, big_font_spacing, rl.WHITE)
                 fallthrough
             case 2:
-                rl.DrawTexturePro(tileset, letter_src, { 100, 32+16, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
-                rl.DrawText("9", 120, 32+20, 3, rl.WHITE)
+                rl.DrawTexturePro(tileset, letter_src, { 104, 32+16, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                rl.DrawTextEx(big_font, "9", { 124, 32+16 }, 16, big_font_spacing, rl.WHITE)
                 fallthrough
             case 1:
-                rl.DrawTexturePro(tileset, letter_src, { 100, 32, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
-                rl.DrawText("1", 120, 32+4, 3, rl.WHITE)
+                rl.DrawTexturePro(tileset, letter_src, { 104, 32, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                rl.DrawTextEx(big_font, "1", { 124, 32 }, 16, big_font_spacing, rl.WHITE)
             }
 
             // draw map when collected
             if has_map {
                 map_src := rl.Rectangle { 128, 64, 16, 16 }
-                rl.DrawTexturePro(tileset, map_src, { 100, 32+48, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
+                rl.DrawTexturePro(tileset, map_src, { 104, 32+48, 16, 16 }, { 0, 0 }, 0, rl.WHITE)
             }
 
-            rl.DrawText("Inventory", 80, 16, 4, rl.WHITE)
+            text_inventory_center_x := center_text_x(0, 224, "Inventory")
+            rl.DrawTextEx(big_font, "Inventory", { text_inventory_center_x, 12 }, 16, big_font_spacing, rl.WHITE)
         }
         if should_show_map {
             rl.ClearBackground({ 78, 25, 19, 255 })

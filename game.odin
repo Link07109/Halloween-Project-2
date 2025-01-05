@@ -44,7 +44,7 @@ main :: proc() {
     // -------------------------------------------------------------------------------------------------
     rl.InitWindow(i32(screen_width), i32(screen_height), title)
     rl.SetWindowMinSize(game_screen_width, game_screen_height)
-    rl.SetWindowState({ .WINDOW_MAXIMIZED, .VSYNC_HINT, .WINDOW_ALWAYS_RUN })
+    rl.SetWindowState({ .WINDOW_MAXIMIZED, .WINDOW_ALWAYS_RUN })
     rl.SetWindowIcon(token_pixel)
     rl.SetExitKey(.GRAVE)
     rl.SetTargetFPS(60)
