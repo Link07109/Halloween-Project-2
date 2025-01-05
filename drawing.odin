@@ -61,6 +61,7 @@ transition_loop :: proc() {
         player_pos = next_player_pos
         player_feet_collider.x = player_pos.x - 6
         player_feet_collider.y = player_pos.y - 9
+        stop_other_sounds()
         room_transition_mid()
     }
 

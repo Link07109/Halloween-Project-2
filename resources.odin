@@ -115,6 +115,24 @@ update_room_music :: proc(current_room: ^Room, current_music: ^rl.Music) {
     }
 }
 
+stop_death_sounds :: proc() {
+    if (rl.IsSoundPlaying(sound_tp_game_over)) {
+        rl.StopSound(sound_tp_game_over)
+    }
+    if (rl.IsSoundPlaying(sound_link_scream2)) {
+        rl.StopSound(sound_link_scream2)
+    }
+    if (rl.IsSoundPlaying(sound_witch_laugh)) {
+        rl.StopSound(sound_witch_laugh)
+    }
+}
+
+stop_other_sounds :: proc() {
+    if (rl.IsSoundPlaying(sound_dimensional)) {
+        rl.StopSound(sound_dimensional)
+    }
+}
+
 timer_soundfx: Timer
 timer_link_scream: Timer
 has_died: bool

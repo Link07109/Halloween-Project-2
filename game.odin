@@ -129,6 +129,7 @@ main :: proc() {
                 game_over_timer_update(current_music)
                 if rl.IsKeyPressed(.ENTER) {
                     reset_data(rooms_map)
+                    stop_death_sounds()
                     current_room = &room_title_screen
                 }
             case "Win_Screen":
